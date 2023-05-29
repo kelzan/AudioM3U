@@ -16,6 +16,7 @@ if False:
 from calibre.gui2.actions import InterfaceAction
 from calibre_plugins.AudioM3U.main import DemoDialog
 
+from qt.core import QToolButton, QMenu
 
 class InterfacePlugin(InterfaceAction):
 
@@ -26,7 +27,10 @@ class InterfacePlugin(InterfaceAction):
     # shortcut. Remember that currently calibre has no central management for
     # keyboard shortcuts, so try to use an unusual/unused shortcut.
     action_spec = ('Audio M3U', None,
-            'Work with M3U files', 'Ctrl+Shift+F2')
+            'Work with audiobooks as M3U files', None)
+    popup_type = QToolButton.MenuButtonPopup
+    action_add_menu = True
+    #action_menu_clone_qaction = "Export Metadata"
 
     def genesis(self):
         # This method is called once per plugin, do initial setup here
@@ -47,6 +51,46 @@ class InterfacePlugin(InterfaceAction):
         # above
         self.qaction.setIcon(icon)
         self.qaction.triggered.connect(self.show_dialog)
+
+        m = self.qaction.menu()
+        #print(f"========= my type: {type(self)}")
+        #print(f"========= mt type: {type(mt)}")
+        self.create_menu_action(m, "m3u_import", "Import metadata", icon, None, "Import metadata from M3U audio files", self.do_import)    
+        self.create_menu_action(m, "m3u_export", "Export metadata", icon, None, "Export metadata to M3U audio files", self.do_export)
+        self.create_menu_action(m, "m3u_addm3u", "Add M3U to book", icon, None, "Creates an M3U file for existing book", self.do_addm3u)
+        self.create_menu_action(m, "m3u_createm3u", "Create M3U", icon, None, "Creates an M3U file and adds to library as new book", self.do_createm3u)
+        self.create_menu_action(m, "m3u_validate", "Import metadata", icon, None, "Validates M3U audio file paths", self.do_validate)
+        self.create_menu_action(m, "m3u_customize", "Customize", icon, None, "Customize Audio M3U plugin", self.do_customize)
+        self.create_menu_action(m, "m3u_help", "Help", icon, None, "Help", self.do_help)
+        # m.addSeparator()
+        # m.addSeparator()
+        # m.addSeparator()
+        # m.addSeparator()
+
+    def foo_func(self):
+        print("FOOOO! (func)")
+
+    def do_import(self):
+        print("Do Import")
+
+    def do_export(self):
+        print("Do Export")
+
+    def do_addm3u(self):
+        print("do addm3u")
+
+    def do_createm3u(self):
+        print("do createm3u")
+
+    def do_validate(self):
+        print("do validate")
+
+    def do_customize(self):
+        print("do customize")
+
+    def do_help(self):
+        print("do_help")
+
 
     def show_dialog(self):
         # The base plugin object defined in __init__.py
