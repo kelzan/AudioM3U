@@ -1,0 +1,7 @@
+        Audio M3U
+===========================
+
+Created by Kelly Larson
+
+Requires calibre >= 0.7.53
+
