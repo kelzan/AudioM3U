@@ -15,7 +15,7 @@ from calibre.utils.config import JSONConfig
 # in a global namespace, so make it as unique as possible.
 # You should always prefix your config file name with plugins/,
 # so as to ensure you dont accidentally clobber a calibre config file
-prefs = JSONConfig('plugins/interface_demo')
+prefs = JSONConfig('plugins/audio_m3u')
 
 # Set defaults
 prefs.defaults['hello_world_msg'] = 'Hello, World!'

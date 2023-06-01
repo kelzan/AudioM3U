@@ -70,7 +70,10 @@ def tally_metadata(file_path):
         tagvals["size"] = 0
     if "duration" not in tagvals:
         tagvals["duration"] = 0
+    if "num_files" not in tagvals:
+        tagvals["num_files"] = 0
     tagvals["size"] += os.path.getsize(file_path)
+    tagvals["num_files"] += 1
     audio = mutagen.File(file_path)
     duration += audio.info.length
     #print(f"Adding {int(audio.info.length)} seconds, total now {tagvals['duration']}")
@@ -112,8 +115,10 @@ def extract_artwork(file_path):
         print("No Cover Artwork found.")
 
 def print_metadata():
-    print(f"Author: {tagvals['author']}")
-    print(f"Title: {tagvals['title']}")
+    if "author" in tagvals:
+        print(f"Author: {tagvals['author']}")
+    if "title" in tagvals:
+        print(f"Title: {tagvals['title']}")
     if "narrator" in tagvals:
         print(f"Narrator: {tagvals['narrator']}")
     print(f"Bitrate: {tagvals['bitrate']} kbps")
