@@ -10,8 +10,11 @@ sys.path.append("./")
 print("m3u_util path",sys.path)
 import mutagen
 
-from mutagen.mp4 import MP4
+from mutagen.mp4 import MP4, MP4Cover
+from mutagen.mp4 import AtomDataType
 from mutagen.mp3 import MP3
+from mutagen.id3 import ID3, APIC
+from mutagen import File
 
 tagvals = {}
 duration = 0.0
@@ -155,6 +158,35 @@ def get_tags(playlist_path):
     #print("returning tagvals: ",tagvals)
     return tagvals
 
+def set_cover(file_path, cover_info):
+    file_extension = os.path.splitext(file_path)[1].lower()
+    tagvals["type"] = file_extension[1:].upper()
+
+    if file_extension == ".mp3":
+        audio = ID3(file_path)
+        if audio.getall('APIC'):
+            audio.delall('APIC')
+        #mime = "image/"+cover_info[0]
+        #print(f"mime: {mime}")
+        apic = APIC(type=3, mime="image/"+cover_info[0], desc="Cover", data=cover_info[1])
+        audio.add(apic)
+        audio.save()
+        #audio.add(APIC(3, "image/"+cover_info[0], 'Cover', cover_info[1]))
+        #audio.save()
+
+    elif file_extension == ".m4a" or file_extension == ".m4b":
+        audio = MP4(file_path)
+        print(f"format: {cover_info[0]}")
+        if (cover_info[0] == "jpeg"):
+            audio["covr"] = [ MP4Cover(cover_info[1], imageformat=MP4Cover.FORMAT_JPEG)]
+            audio.save()
+            print("Saved")
+        elif (cover_info[1] == "png"):
+            audio["covr"] = [ MP4Cover(cover_info[1], imageformat=MP4Cover.FORMAT_PNG)]
+            audio.save()
+
+
+
 def get_cover(playlist_path):
     """
     Save cover artwork to a file (if available)
@@ -168,9 +200,41 @@ def get_cover(playlist_path):
     #print("keys: ",audio.keys())
     if "covr" in audio:
         cover_art = audio["covr"][0]
+        if (audio["covr"][0].imageformat == AtomDataType.PNG):
+            mime = "png"
+        else:
+            mime = "jpeg"
+        #print(f"[1] = {audio['covr'][1]}")
         #print(f"Cover Artwork found in covr")
     elif "APIC:" in audio:
         cover_art = audio.get("APIC:").data
+        mime = audio.get("APIC:").mime
+        if mime.startswith('image/'):
+            mime = mime[6:]        
+        #print(f"cover_type: {cover_type}")
         #print(f"Cover Artwork found in APIC:")
-        
-    return cover_art
+    print(f"mime: {mime}")       
+    return ( (mime, cover_art) )
+
+def export_tags(playlist_path, update_fields):
+    keys = list(update_fields.keys())
+    print(f"keys: {keys}")
+    with open(playlist_path, "r") as playlist_file:
+        for line in playlist_file:
+            line = line.strip()
+            if line and not line.startswith('#'):
+                audio = File(line, easy=True)
+        #        audio.info.pprint()
+                if "author" in keys:
+                    audio["artist"] = update_fields["author"]
+                if "title" in keys:
+                    audio["album"] = update_fields["title"]
+                if "narrator" in keys:
+                    audio["composer"] = update_fields["narrator"]
+                #if "cover" in keys:
+                #    audio["covr"] = update_fields["cover"]
+                #audio.info.pprint()
+                print("SAVING!")
+                audio.save()
+                if "cover" in keys:
+                    set_cover(line, update_fields["cover"])

@@ -239,6 +239,7 @@ for atomid, key in {
     'soar': 'artistsort',
     'sonm': 'titlesort',
     'soco': 'composersort',
+    '\xa9wrt': 'composer',
 }.items():
     EasyMP4Tags.RegisterTextKey(key, atomid)
 

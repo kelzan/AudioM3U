@@ -16,7 +16,7 @@ if False:
 from calibre.gui2.actions import InterfaceAction
 from calibre_plugins.AudioM3U.main import DemoDialog
 from calibre_plugins.AudioM3U.meta_in import ImportDialog
-#from calibre_plugins.AudioM3U.export import ExportDialog
+from calibre_plugins.AudioM3U.meta_out import ExportDialog
 
 
 from qt.core import QToolButton, QMenu
@@ -75,12 +75,13 @@ class InterfacePlugin(InterfaceAction):
                                 None, "Help", self.do_help)
         
         self.min_dlg = None # Placeholder for Metadata Import Dialog
+        self.mout_dlg = None # Placeholder for Metadata Export Dialog
 
 #    def do_import(self):
 #        print("Do Import")
 
-    def do_export(self):
-        print("Do Export")
+    # def do_export(self):
+    #     print("Do Export")
 
     def do_addm3u(self):
         print("do addm3u")
@@ -130,7 +131,22 @@ class InterfacePlugin(InterfaceAction):
             self.min_dlg = ImportDialog(self.gui, self.qaction.icon(), do_user_config)
         self.min_dlg.show()
 
+    def do_export(self):
+        print("Do Export")
+        # The base plugin object defined in __init__.py
+        base_plugin_object = self.interface_action_base_plugin
+        # Show the config dialog
+        # The config dialog can also be shown from within
+        # Preferences->Plugins, which is why the do_user_config
+        # method is defined on the base plugin class
+        do_user_config = base_plugin_object.do_user_config
 
+        # self.gui is the main calibre GUI. It acts as the gateway to access
+        # all the elements of the calibre user interface, it should also be the
+        # parent of the dialog
+        if (self.mout_dlg == None):
+            self.mout_dlg = ExportDialog(self.gui, self.qaction.icon(), do_user_config)
+        self.mout_dlg.show()
 
     def apply_settings(self):
         from calibre_plugins.AudioM3U.config import prefs

@@ -12,6 +12,7 @@ sys.path.append("c:\\Users\\kelly\\Documents\\Source\\AudioM3U")
 from calibre_plugins.AudioM3U.m3u_utils import get_tags
 from calibre_plugins.AudioM3U.m3u_utils import get_cover
 from calibre_plugins.AudioM3U.m3u_utils import playtime
+from calibre_plugins.AudioM3U.m3u_utils import export_tags
 
 from polyglot.builtins import cmp, iteritems, itervalues, string_or_bytes
 
@@ -21,14 +22,14 @@ from PyQt5.QtCore import (Qt, QCoreApplication, QMetaObject)
 from calibre_plugins.AudioM3U.config import prefs
 
 
-class ImportDialog(QDialog):
+class ExportDialog(QDialog):
 
     def __init__(self, gui, icon, do_user_config):
         QDialog.__init__(self, gui)
         self.gui = gui
         self.do_user_config = do_user_config
 
-        self.fields = ["cover", "title", "author", "narrator", "duration", "total_size", "sample_rate", "bitrate", "mode", "type", "num_files"]
+        self.fields = ["cover", "title", "author", "narrator"]
 
         # The current database shown in the GUI
         # db is an instance of the class LibraryDatabase from db/legacy.py
@@ -42,8 +43,8 @@ class ImportDialog(QDialog):
         """
         Initialize the window and display its contents to the screen
         """
-        self.setGeometry(100, 100, 500, 300)
-        self.setWindowTitle('Import metadata')
+        self.setGeometry(100, 100, 500, 150)
+        self.setWindowTitle('Export metadata')
         self.setupWidgets()
 
 #        self.show()
@@ -78,10 +79,10 @@ class ImportDialog(QDialog):
         # self.blank_over_checkbox.setObjectName("blank_over_checkbox")
         # self.verticalLayout.addWidget(self.blank_over_checkbox)
 
-        # Only Blank Fields Import checkbox
-        self.only_blank_cb = QCheckBox(self)
-        self.only_blank_cb.setObjectName("only_bank_cb")
-        self.verticalLayout.addWidget(self.only_blank_cb)
+        # # Only Blank Fields Import checkbox
+        # self.only_blank_cb = QCheckBox(self)
+        # self.only_blank_cb.setObjectName("only_bank_cb")
+        # self.verticalLayout.addWidget(self.only_blank_cb)
 
         # Dialog Button Box
         self.buttonBox = QDialogButtonBox(self)
@@ -101,16 +102,16 @@ class ImportDialog(QDialog):
         
     def accept(self):
         print("ACCEPT!")
-        self.update_metadata()
+        self.export_metadata()
         #self.setWindowTitle('Whassup!')
         super().accept()
     
     def retranslateUi(self, ImportDialog):
         _translate = QCoreApplication.translate
-        ImportDialog.setWindowTitle(_translate("ImportDialog", "Import Metadata"))
-        self.top_label.setText(_translate("ImportDialog", "Metadata fields to import from audio files:"))
+        ImportDialog.setWindowTitle(_translate("ExportDialog", "Export Metadata"))
+        self.top_label.setText(_translate("ExportDialog", "Metadata fields to export to audio files:"))
         #self.blank_over_checkbox.setText(_translate("ImportDialog", "Allow blank import data to overwrite existing data"))
-        self.only_blank_cb.setText(_translate("ImportDialog", "Only import to blank fields, don\'t overwrite existing data"))
+        #self.only_blank_cb.setText(_translate("ImportDialog", "Only import to blank fields, don\'t overwrite existing data"))
 
     def is_checked(self, label):
         found = self.field_list.findItems(label, Qt.MatchExactly)
@@ -119,12 +120,7 @@ class ImportDialog(QDialog):
         #print(f"{label} Found: {type(found)} {len(found)}")
         return found[0].checkState() == Qt.Checked
     
-    # def can_write(self, is_field_null, is_import_null):
-    #     print(f"({self.blank_over_checkbox.isChecked()} or ({not is_import_null})) and (({not self.only_blank_cb.isChecked()}) or {not is_field_null})")
-    #     return ((self.blank_over_checkbox.isChecked() or (not is_import_null)) and
-    #             ((not self.only_blank_cb.isChecked()) or (not is_field_null)))
-
-    def update_metadata(self):
+    def export_metadata(self):
         '''
         Set the metadata in the files in the selected book's record to
         match the current metadata in the database.
@@ -146,67 +142,36 @@ class ImportDialog(QDialog):
             path = db.format_abspath(book_id, "M3U")
             print(f"Path: {path}")
             # Now get tags from the audio files
-            audio_tags = get_tags(path)
+            #audio_tags = get_tags(path)
             # Get the current metadata for this book from the db
             mi = db.get_metadata(book_id, get_cover=True, cover_as_data=True)
-            fmts = db.formats(book_id)
-            if not fmts:
-                continue
-            #print("audio_tags: ",audio_tags)
-            #non_none_fields = mi.all_non_none_fields()
-            #print("non none:",non_none_fields)
+            #fmts = db.formats(book_id)
+            #if not fmts:
+            #    continue
             # Now determine which fields, based on config and options, need to be updated
-            update_all = not self.only_blank_cb.isChecked()
+            #update_all = not self.only_blank_cb.isChecked()
+            export_fields = list(filter(lambda x: (self.is_checked(x)),self.fields))
 
-            if (self.is_checked("author")):
-                if (update_all or mi.is_null("authors")):
-                    if "author" in audio_tags:
-                        mi.set("authors", audio_tags['author'].split(" & "))
-            if (self.is_checked("title")):
-                if (update_all or mi.is_null("title")):
-                    if "title" in audio_tags:
-                        mi.set("title", audio_tags['title'])
-            if (self.is_checked("narrator")):
-                if (update_all or mi.is_null("#narrator")):
-                    if "narrator" in audio_tags:
-                        mi.set("#narrator", audio_tags['narrator'])
-            if (self.is_checked("duration")):
-                if (update_all or mi.is_null("#duration")):
-                    mi.set("#duration", playtime(audio_tags['duration']))
-            if (self.is_checked("bitrate")):
-                if (update_all or mi.is_null("#bitrate")):
-                    mi.set("#bitrate", audio_tags['bitrate'])
-            if (self.is_checked("sample_rate")):
-                if (update_all or mi.is_null("#sample_rate")):
-                    mi.set("#sample_rate", audio_tags['sample_rate'])
-            if (self.is_checked("total_size")):
-                if (update_all or mi.is_null("#size")):
-                    mi.set("#size", audio_tags['size'] / (1024*1024))
-            if (self.is_checked("type")):
-                if (update_all or mi.is_null("#type")):
-                    mi.set("#type", audio_tags['type'])
-            if (self.is_checked("mode")):
-                if (update_all or mi.is_null("#mode")):
-                    mi.set("#mode", audio_tags['mode'])
-            if (self.is_checked("num_files")):
-                if (update_all or mi.is_null("#num_files")):
-                    mi.set("#num_files", audio_tags['num_files'])
+            export_meta = {}
+            print(f"export_fields: {export_fields}")
+            for field in export_fields:
+                if ((field == "author") and (not mi.is_null("authors"))):
+                    export_meta["author"] = " & ".join(mi.get("authors"))
+                if ((field == "title") and (not mi.is_null("title"))):
+                    export_meta["title"] = mi.get("title")
+                if ((field == "narrator") and (not mi.is_null("#narrator"))):
+                    print(f"Getting narrator: {mi.get('#narrator')}")
+                    export_meta["narrator"] = " & ".join(mi.get("#narrator"))
+                if ((field == "cover") and (not mi.is_null("cover_data"))):
+                    export_meta["cover"] = mi.get("cover_data")
+            #print(f"export_meta: {export_meta}")
+            export_tags(path, export_meta)
 
-            if (self.is_checked("cover")):
-                if (update_all or mi.is_null("cover_data")):
-                    cover = get_cover(path)
-                    mi.set("cover_data", cover) # This is a ('type', 'data') tuple
-
-            self.db.set_metadata(book_id, mi)
-
-            self.gui.library_view.model().refresh_ids([book_id])
-            #print(f"type: {type(self.gui.book_details)}")
-            #self.gui.book_details.show_data(mi)
-            #self.gui.book_details.reset_info()
-            #self.gui.book_details.update_layout()
+            #self.db.set_metadata(book_id, mi)
+            #self.gui.library_view.model().refresh_ids([book_id])
             
-        info_dialog(self, 'Updated files',
-                f'Updated the metadata in the files of {len(m3u_ids)} of {len(ids)} book(s)',
+        info_dialog(self, 'Updated audio files',
+                f'Exported the metadata to the audio files for {len(m3u_ids)} of {len(ids)} book(s)',
                 show=True)
 
     def config(self):
