@@ -12,10 +12,10 @@ tag loading and saving.
 import sys
 import os.path
 
-import mutagen
-import mutagen.id3
+import calibre_plugins.AudioM3U.mutagen
+import calibre_plugins.AudioM3U.mutagen.id3
 
-from ._util import SignalHandler, OptionParser
+from calibre_plugins.AudioM3U.mutagen._tools._util import SignalHandler, OptionParser
 
 
 VERSION = (0, 1)

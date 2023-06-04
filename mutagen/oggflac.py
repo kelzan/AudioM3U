@@ -19,11 +19,11 @@ __all__ = ["OggFLAC", "Open", "delete"]
 import struct
 from io import BytesIO
 
-from mutagen import StreamInfo
-from mutagen.flac import StreamInfo as FLACStreamInfo, error as FLACError
-from mutagen._vorbis import VCommentDict
-from mutagen._util import loadfile, convert_error
-from mutagen.ogg import OggPage, OggFileType, error as OggError
+from calibre_plugins.AudioM3U.mutagen import StreamInfo
+from calibre_plugins.AudioM3U.mutagen.flac import StreamInfo as FLACStreamInfo, error as FLACError
+from calibre_plugins.AudioM3U.mutagen._vorbis import VCommentDict
+from calibre_plugins.AudioM3U.mutagen._util import loadfile, convert_error
+from calibre_plugins.AudioM3U.mutagen.ogg import OggPage, OggFileType, error as OggError
 
 
 class error(OggError):

@@ -23,13 +23,13 @@ __all__ = ["FLAC", "Open", "delete"]
 
 import struct
 from io import BytesIO
-from ._vorbis import VCommentDict
-import mutagen
+from calibre_plugins.AudioM3U.mutagen._vorbis import VCommentDict
+import calibre_plugins.AudioM3U.mutagen
 
-from mutagen._util import resize_bytes, MutagenError, get_size, loadfile, \
+from calibre_plugins.AudioM3U.mutagen._util import resize_bytes, MutagenError, get_size, loadfile, \
     convert_error, bchr, endswith
-from mutagen._tags import PaddingInfo
-from mutagen.id3._util import BitPaddedInt
+from calibre_plugins.AudioM3U.mutagen._tags import PaddingInfo
+from calibre_plugins.AudioM3U.mutagen.id3._util import BitPaddedInt
 from functools import reduce
 
 

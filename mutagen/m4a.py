@@ -13,8 +13,8 @@ since 1.31: mutagen.m4a will no longer work; any operation that could fail
 
 import warnings
 
-from mutagen import FileType, Tags, StreamInfo
-from ._util import DictProxy, MutagenError, loadfile
+from calibre_plugins.AudioM3U.mutagen import FileType, Tags, StreamInfo
+from calibre_plugins.AudioM3U.mutagen._util import DictProxy, MutagenError, loadfile
 
 warnings.warn(
     "mutagen.m4a is deprecated; use mutagen.mp4 instead.",

@@ -12,10 +12,10 @@
 import struct
 from struct import pack
 
-from mutagen import StreamInfo, FileType
+from calibre_plugins.AudioM3U.mutagen import StreamInfo, FileType
 
-from mutagen.id3._util import ID3NoHeaderError, error as ID3Error
-from mutagen._iff import (
+from calibre_plugins.AudioM3U.mutagen.id3._util import ID3NoHeaderError, error as ID3Error
+from calibre_plugins.AudioM3U.mutagen._iff import (
     IffChunk,
     IffContainerChunkMixin,
     IffFile,
@@ -23,7 +23,7 @@ from mutagen._iff import (
     InvalidChunk,
     error as IffError,
 )
-from mutagen._util import (
+from calibre_plugins.AudioM3U.mutagen._util import (
     convert_error,
     loadfile,
     endswith,

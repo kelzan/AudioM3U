@@ -9,9 +9,9 @@ import zlib
 from struct import unpack
 from typing import Sequence
 
-from ._util import ID3JunkFrameError, ID3EncryptionUnsupportedError, unsynch, \
+from calibre_plugins.AudioM3U.mutagen.id3._util import ID3JunkFrameError, ID3EncryptionUnsupportedError, unsynch, \
     ID3SaveConfig, error
-from ._specs import BinaryDataSpec, StringSpec, Latin1TextSpec, \
+from calibre_plugins.AudioM3U.mutagen.id3._specs import BinaryDataSpec, StringSpec, Latin1TextSpec, \
     EncodedTextSpec, ByteSpec, EncodingSpec, ASPIIndexSpec, SizedIntegerSpec, \
     IntegerSpec, Encoding, VolumeAdjustmentsSpec, VolumePeakSpec, \
     VolumeAdjustmentSpec, ChannelSpec, MultiSpec, SynchronizedTextSpec, \
@@ -559,7 +559,7 @@ class TCON(TextFrame):
     use the 'genres' property rather than the 'text' attribute.
     """
 
-    from mutagen._constants import GENRES
+    from calibre_plugins.AudioM3U.mutagen._constants import GENRES
     GENRES = GENRES
 
     def __get_genres(self):

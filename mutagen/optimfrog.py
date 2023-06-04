@@ -21,9 +21,9 @@ __all__ = ["OptimFROG", "Open", "delete"]
 
 import struct
 
-from ._util import convert_error, endswith
-from mutagen import StreamInfo
-from mutagen.apev2 import APEv2File, error, delete
+from calibre_plugins.AudioM3U.mutagen._util import convert_error, endswith
+from calibre_plugins.AudioM3U.mutagen import StreamInfo
+from calibre_plugins.AudioM3U.mutagen.apev2 import APEv2File, error, delete
 
 
 SAMPLE_TYPE_BITS = {

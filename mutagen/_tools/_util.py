@@ -10,7 +10,7 @@ import signal
 import contextlib
 import optparse
 
-from mutagen._util import iterbytes
+from calibre_plugins.AudioM3U.mutagen._util import iterbytes
 
 
 def split_escape(string, sep, maxsplit=None, escape_char="\\"):

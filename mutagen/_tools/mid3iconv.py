@@ -12,10 +12,10 @@ ID3iconv is a Java based ID3 encoding converter, here's the Python version.
 import sys
 import locale
 
-import mutagen
-import mutagen.id3
+import calibre_plugins.AudioM3U.mutagen
+import calibre_plugins.AudioM3U.mutagen.id3
 
-from ._util import SignalHandler, OptionParser
+from calibre_plugins.AudioM3U.mutagen._tools._util import SignalHandler, OptionParser
 
 
 VERSION = (0, 3)

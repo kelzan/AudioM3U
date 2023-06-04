@@ -18,10 +18,10 @@ __all__ = ["Musepack", "Open", "delete"]
 
 import struct
 
-from mutagen import StreamInfo
-from mutagen.apev2 import APEv2File, error, delete
-from mutagen.id3._util import BitPaddedInt
-from mutagen._util import cdata, convert_error, intround, endswith
+from calibre_plugins.AudioM3U.mutagen import StreamInfo
+from calibre_plugins.AudioM3U.mutagen.apev2 import APEv2File, error, delete
+from calibre_plugins.AudioM3U.mutagen.id3._util import BitPaddedInt
+from calibre_plugins.AudioM3U.mutagen._util import cdata, convert_error, intround, endswith
 
 
 class MusepackHeaderError(error):

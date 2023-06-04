@@ -17,9 +17,9 @@ __all__ = ["MonkeysAudio", "Open", "delete"]
 
 import struct
 
-from mutagen import StreamInfo
-from mutagen.apev2 import APEv2File, error, delete
-from mutagen._util import cdata, convert_error, endswith
+from calibre_plugins.AudioM3U.mutagen import StreamInfo
+from calibre_plugins.AudioM3U.mutagen.apev2 import APEv2File, error, delete
+from calibre_plugins.AudioM3U.mutagen._util import cdata, convert_error, endswith
 
 
 class MonkeysAudioHeaderError(error):

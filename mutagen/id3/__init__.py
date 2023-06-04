@@ -29,15 +29,15 @@ Since this file's documentation is a little unwieldy, you are probably
 interested in the :class:`ID3` class to start with.
 """
 
-from ._file import ID3, ID3FileType, delete, ID3v1SaveOptions
-from ._specs import Encoding, PictureType, CTOCFlags, ID3TimeStamp
-from ._frames import Frames, Frames_2_2, Frame, TextFrame, UrlFrame, \
+from calibre_plugins.AudioM3U.mutagen.id3._file import ID3, ID3FileType, delete, ID3v1SaveOptions
+from calibre_plugins.AudioM3U.mutagen.id3._specs import Encoding, PictureType, CTOCFlags, ID3TimeStamp
+from calibre_plugins.AudioM3U.mutagen.id3._frames import Frames, Frames_2_2, Frame, TextFrame, UrlFrame, \
     UrlFrameU, TimeStampTextFrame, BinaryFrame, NumericPartTextFrame, \
     NumericTextFrame, PairedTextFrame
-from ._util import ID3NoHeaderError, error, ID3UnsupportedVersionError
-from ._id3v1 import ParseID3v1, MakeID3v1
-from ._tags import ID3Tags
-from ._frames import (AENC, APIC, ASPI, BUF, CHAP, CNT, COM, COMM, COMR, CRA,
+from calibre_plugins.AudioM3U.mutagen.id3._util import ID3NoHeaderError, error, ID3UnsupportedVersionError
+from calibre_plugins.AudioM3U.mutagen.id3._id3v1 import ParseID3v1, MakeID3v1
+from calibre_plugins.AudioM3U.mutagen.id3._tags import ID3Tags
+from calibre_plugins.AudioM3U.mutagen.id3._frames import (AENC, APIC, ASPI, BUF, CHAP, CNT, COM, COMM, COMR, CRA,
     CRM, CTOC, ENCR, EQU2, ETC, ETCO, GEO, GEOB, GP1, GRID, GRP1, IPL, IPLS,
     LINK, LNK, MCDI, MCI, MLL, MLLT, MVI, MVIN, MVN, MVNM, OWNE, PCNT, PCST,
     PIC, POP, POPM, POSS, PRIV, RBUF, REV, RVA, RVA2, RVAD, RVRB, SEEK, SIGN,
@@ -53,7 +53,7 @@ from ._frames import (AENC, APIC, ASPI, BUF, CHAP, CNT, COM, COMM, COMR, CRA,
     WOAR, WOAS, WORS, WPAY, WPB, WPUB, WXX, WXXX)
 
 # deprecated
-from ._util import ID3EncryptionUnsupportedError, ID3JunkFrameError, \
+from calibre_plugins.AudioM3U.mutagen.id3._util import ID3EncryptionUnsupportedError, ID3JunkFrameError, \
     ID3BadUnsynchData, ID3BadCompressedData, ID3TagError, ID3Warning, \
     BitPaddedInt as _BitPaddedIntForPicard
 

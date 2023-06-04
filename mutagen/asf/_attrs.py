@@ -10,9 +10,9 @@ import sys
 import struct
 from typing import Dict, Type
 
-from mutagen._util import total_ordering, reraise
+from calibre_plugins.AudioM3U.mutagen._util import total_ordering, reraise
 
-from ._util import ASFError
+from calibre_plugins.AudioM3U.mutagen.asf._util import ASFError
 
 
 class ASFBaseAttribute(object):

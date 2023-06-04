@@ -7,9 +7,9 @@
 
 from typing import Dict, Callable
 
-from mutagen import Tags
-from mutagen._util import DictMixin, dict_match
-from mutagen.mp4 import MP4, MP4Tags, error, delete
+from calibre_plugins.AudioM3U.mutagen import Tags
+from calibre_plugins.AudioM3U.mutagen._util import DictMixin, dict_match
+from calibre_plugins.AudioM3U.mutagen.mp4 import MP4, MP4Tags, error, delete
 
 
 __all__ = ["EasyMP4Tags", "EasyMP4", "delete", "error"]

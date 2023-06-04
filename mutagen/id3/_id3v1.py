@@ -10,9 +10,9 @@
 import errno
 from struct import error as StructError, unpack
 
-from mutagen._util import bchr
+from calibre_plugins.AudioM3U.mutagen._util import bchr
 
-from ._frames import TCON, TRCK, COMM, TDRC, TYER, TALB, TPE1, TIT2
+from calibre_plugins.AudioM3U.mutagen.id3._frames import TCON, TRCK, COMM, TDRC, TYER, TALB, TPE1, TIT2
 
 
 def find_id3v1(fileobj, v2_version=4, known_frames=None):

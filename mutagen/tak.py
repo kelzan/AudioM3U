@@ -20,13 +20,13 @@ __all__ = ["TAK", "Open", "delete"]
 
 import struct
 
-from mutagen import StreamInfo
-from mutagen.apev2 import (
+from calibre_plugins.AudioM3U.mutagen import StreamInfo
+from calibre_plugins.AudioM3U.mutagen.apev2 import (
     APEv2File,
     delete,
     error,
 )
-from mutagen._util import (
+from calibre_plugins.AudioM3U.mutagen._util import (
     BitReader,
     BitReaderError,
     convert_error,

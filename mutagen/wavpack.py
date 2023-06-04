@@ -18,9 +18,9 @@ for more information.
 
 __all__ = ["WavPack", "Open", "delete"]
 
-from mutagen import StreamInfo
-from mutagen.apev2 import APEv2File, error, delete
-from mutagen._util import cdata, convert_error
+from calibre_plugins.AudioM3U.mutagen import StreamInfo
+from calibre_plugins.AudioM3U.mutagen.apev2 import APEv2File, error, delete
+from calibre_plugins.AudioM3U.mutagen._util import cdata, convert_error
 
 
 class WavPackHeaderError(error):

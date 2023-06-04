@@ -11,7 +11,7 @@
 import struct
 from struct import pack
 
-from mutagen._iff import (
+from calibre_plugins.AudioM3U.mutagen._iff import (
     IffChunk,
     IffContainerChunkMixin,
     IffFile,

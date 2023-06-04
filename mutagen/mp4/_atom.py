@@ -7,7 +7,7 @@
 
 import struct
 
-from mutagen._util import convert_error
+from calibre_plugins.AudioM3U.mutagen._util import convert_error
 
 # This is not an exhaustive list of container atoms, but just the
 # ones this module needs to peek inside.

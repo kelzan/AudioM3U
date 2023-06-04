@@ -8,13 +8,13 @@ sys.path.append("./")
 # from calibre_plugins.AudioM3U.unzip import install_libs
 # sys.path.append(UNZIP_PATH)
 print("m3u_util path",sys.path)
-import mutagen
+import calibre_plugins.AudioM3U.mutagen
 
-from mutagen.mp4 import MP4, MP4Cover
-from mutagen.mp4 import AtomDataType
-from mutagen.mp3 import MP3
-from mutagen.id3 import ID3, APIC
-from mutagen import File
+from calibre_plugins.AudioM3U.mutagen.mp4 import MP4, MP4Cover
+from calibre_plugins.AudioM3U.mutagen.mp4 import AtomDataType
+from calibre_plugins.AudioM3U.mutagen.mp3 import MP3
+from calibre_plugins.AudioM3U.mutagen.id3 import ID3, APIC
+from calibre_plugins.AudioM3U.mutagen import File
 
 tagvals = {}
 duration = 0.0
@@ -77,7 +77,7 @@ def tally_metadata(file_path):
         tagvals["num_files"] = 0
     tagvals["size"] += os.path.getsize(file_path)
     tagvals["num_files"] += 1
-    audio = mutagen.File(file_path)
+    audio = File(file_path)
     duration += audio.info.length
     #print(f"Adding {int(audio.info.length)} seconds, total now {tagvals['duration']}")
     #print(f"duration is {duration}")
@@ -97,7 +97,7 @@ def extract_artwork(file_path):
     """
     Save cover artwork to a file (if available)
     """
-    audio = mutagen.File(file_path)
+    audio = File(file_path)
     cover_art_filename = f"{tagvals['title']}_cover.jpg"
     #print("keys: ",audio.keys())
     if "covr" in audio:
@@ -195,8 +195,9 @@ def get_cover(playlist_path):
         lines = playlist_file.readlines()
         file_path = lines[0].strip()
 
-    audio = mutagen.File(file_path)
+    audio = File(file_path)
     cover_art = None
+    mime = None
     #print("keys: ",audio.keys())
     if "covr" in audio:
         cover_art = audio["covr"][0]
@@ -206,13 +207,17 @@ def get_cover(playlist_path):
             mime = "jpeg"
         #print(f"[1] = {audio['covr'][1]}")
         #print(f"Cover Artwork found in covr")
-    elif "APIC:" in audio:
-        cover_art = audio.get("APIC:").data
-        mime = audio.get("APIC:").mime
-        if mime.startswith('image/'):
-            mime = mime[6:]        
-        #print(f"cover_type: {cover_type}")
-        #print(f"Cover Artwork found in APIC:")
+    else:
+        apics = [item for item in audio.keys() if item.startswith("APIC:")]
+        #print(f"apics: {apics}")
+        if (len(apics) > 0):
+            # Could possibly have multiple artwork tags, so just grab the first one
+            cover_art = audio.get(apics[0]).data
+            mime = audio.get(apics[0]).mime
+            if mime.startswith('image/'):
+                mime = mime[6:]        
+            #print(f"cover_type: {cover_type}")
+            #print(f"Cover Artwork found in APIC:")
     print(f"mime: {mime}")       
     return ( (mime, cover_art) )
 

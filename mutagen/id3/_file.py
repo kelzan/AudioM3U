@@ -9,15 +9,15 @@
 
 import struct
 
-import mutagen
-from mutagen._util import insert_bytes, delete_bytes, enum, \
+import calibre_plugins.AudioM3U.mutagen
+from calibre_plugins.AudioM3U.mutagen._util import insert_bytes, delete_bytes, enum, \
     loadfile, convert_error, read_full
-from mutagen._tags import PaddingInfo
+from calibre_plugins.AudioM3U.mutagen._tags import PaddingInfo
 
-from ._util import error, ID3NoHeaderError, ID3UnsupportedVersionError, \
+from calibre_plugins.AudioM3U.mutagen.id3._util import error, ID3NoHeaderError, ID3UnsupportedVersionError, \
     BitPaddedInt
-from ._tags import ID3Tags, ID3Header, ID3SaveConfig
-from ._id3v1 import MakeID3v1, find_id3v1
+from calibre_plugins.AudioM3U.mutagen.id3._tags import ID3Tags, ID3Header, ID3SaveConfig
+from calibre_plugins.AudioM3U.mutagen.id3._id3v1 import MakeID3v1, find_id3v1
 
 
 @enum
@@ -33,7 +33,7 @@ class ID3v1SaveOptions(object):
     """ID3v1 tags will be created and/or updated"""
 
 
-class ID3(ID3Tags, mutagen.Metadata):
+class ID3(ID3Tags, calibre_plugins.AudioM3U.mutagen.Metadata):
     """ID3(filething=None)
 
     A file with an ID3v2 tag.
@@ -336,7 +336,7 @@ def delete(filething, delete_v1=True, delete_v2=True):
                 delete_bytes(f, insize + 10, 0)
 
 
-class ID3FileType(mutagen.FileType):
+class ID3FileType(calibre_plugins.AudioM3U.mutagen.FileType):
     """ID3FileType(filething, ID3=None, **kwargs)
 
     An unknown type of file with ID3 tags.
@@ -358,7 +358,7 @@ class ID3FileType(mutagen.FileType):
 
     ID3 = ID3
 
-    class _Info(mutagen.StreamInfo):
+    class _Info(calibre_plugins.AudioM3U.mutagen.StreamInfo):
         length = 0
 
         def __init__(self, fileobj, offset):

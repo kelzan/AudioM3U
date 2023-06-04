@@ -9,7 +9,7 @@ import os
 import sys
 import traceback
 
-from ._util import SignalHandler
+from calibre_plugins.AudioM3U.mutagen._tools._util import SignalHandler
 
 
 class Report(object):
@@ -77,7 +77,7 @@ class Report(object):
 
 
 def check_dir(path):
-    from mutagen.mp3 import MP3
+    from calibre_plugins.AudioM3U.mutagen.mp3 import MP3
 
     rep = Report(path)
     print(u"Scanning", path)

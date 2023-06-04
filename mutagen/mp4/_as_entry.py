@@ -7,10 +7,10 @@
 
 from io import BytesIO
 
-from mutagen.aac import ProgramConfigElement
-from mutagen._util import BitReader, BitReaderError, cdata
-from ._util import parse_full_atom
-from ._atom import Atom, AtomError
+from calibre_plugins.AudioM3U.mutagen.aac import ProgramConfigElement
+from calibre_plugins.AudioM3U.mutagen._util import BitReader, BitReaderError, cdata
+from calibre_plugins.AudioM3U.mutagen.mp4._util import parse_full_atom
+from calibre_plugins.AudioM3U.mutagen.mp4._atom import Atom, AtomError
 
 
 class ASEntryError(Exception):

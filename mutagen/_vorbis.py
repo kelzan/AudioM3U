@@ -18,8 +18,8 @@ The specification is at http://www.xiph.org/vorbis/doc/v-comment.html.
 import sys
 from io import BytesIO
 
-import mutagen
-from mutagen._util import DictMixin, cdata, MutagenError, reraise
+import calibre_plugins.AudioM3U.mutagen
+from calibre_plugins.AudioM3U.mutagen._util import DictMixin, cdata, MutagenError, reraise
 
 
 def is_valid_key(key):

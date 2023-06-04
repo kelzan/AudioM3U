@@ -12,11 +12,11 @@ import sys
 import struct
 from io import BytesIO
 
-from mutagen import FileType, StreamInfo
-from mutagen._util import cdata, MutagenError, loadfile, \
+from calibre_plugins.AudioM3U.mutagen import FileType, StreamInfo
+from calibre_plugins.AudioM3U.mutagen._util import cdata, MutagenError, loadfile, \
     convert_error, reraise, endswith
-from mutagen.id3 import ID3
-from mutagen.id3._util import ID3NoHeaderError, error as ID3Error
+from calibre_plugins.AudioM3U.mutagen.id3 import ID3
+from calibre_plugins.AudioM3U.mutagen.id3._util import ID3NoHeaderError, error as ID3Error
 
 
 __all__ = ["DSF", "Open", "delete"]

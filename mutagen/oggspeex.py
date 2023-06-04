@@ -18,11 +18,11 @@ http://lists.xiph.org/pipermail/speex-dev/2006-July/004676.html.
 
 __all__ = ["OggSpeex", "Open", "delete"]
 
-from mutagen import StreamInfo
-from mutagen._vorbis import VCommentDict
-from mutagen.ogg import OggPage, OggFileType, error as OggError
-from mutagen._util import cdata, get_size, loadfile, convert_error
-from mutagen._tags import PaddingInfo
+from calibre_plugins.AudioM3U.mutagen import StreamInfo
+from calibre_plugins.AudioM3U.mutagen._vorbis import VCommentDict
+from calibre_plugins.AudioM3U.mutagen.ogg import OggPage, OggFileType, error as OggError
+from calibre_plugins.AudioM3U.mutagen._util import cdata, get_size, loadfile, convert_error
+from calibre_plugins.AudioM3U.mutagen._tags import PaddingInfo
 
 
 class error(OggError):

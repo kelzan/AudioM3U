@@ -7,7 +7,7 @@
 
 import warnings
 
-from mutagen._util import DictMixin, loadfile
+from calibre_plugins.AudioM3U.mutagen._util import DictMixin, loadfile
 
 
 class FileType(DictMixin):

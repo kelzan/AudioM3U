@@ -10,14 +10,14 @@
 
 __all__ = ["ASF", "Open"]
 
-from mutagen import FileType, Tags, StreamInfo
-from mutagen._util import resize_bytes, DictMixin, loadfile, convert_error
+from calibre_plugins.AudioM3U.mutagen import FileType, Tags, StreamInfo
+from calibre_plugins.AudioM3U.mutagen._util import resize_bytes, DictMixin, loadfile, convert_error
 
-from ._util import error, ASFError, ASFHeaderError
-from ._objects import HeaderObject, MetadataLibraryObject, MetadataObject, \
+from calibre_plugins.AudioM3U.mutagen.asf._util import error, ASFError, ASFHeaderError
+from calibre_plugins.AudioM3U.mutagen.asf._objects import HeaderObject, MetadataLibraryObject, MetadataObject, \
     ExtendedContentDescriptionObject, HeaderExtensionObject, \
     ContentDescriptionObject
-from ._attrs import ASFGUIDAttribute, ASFWordAttribute, ASFQWordAttribute, \
+from calibre_plugins.AudioM3U.mutagen.asf._attrs import ASFGUIDAttribute, ASFWordAttribute, ASFQWordAttribute, \
     ASFDWordAttribute, ASFBoolAttribute, ASFByteArrayAttribute, \
     ASFUnicodeAttribute, ASFBaseAttribute, ASFValue
 

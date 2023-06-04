@@ -15,7 +15,7 @@ from functools import partial
 from io import BytesIO
 from typing import List
 
-from mutagen._util import cdata, BitReader, iterbytes
+from calibre_plugins.AudioM3U.mutagen._util import cdata, BitReader, iterbytes
 
 
 class LAMEError(Exception):

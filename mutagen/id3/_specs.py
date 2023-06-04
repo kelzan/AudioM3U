@@ -9,9 +9,9 @@ import struct
 import codecs
 from struct import unpack, pack
 
-from .._util import total_ordering, decode_terminated, enum, flags, \
+from calibre_plugins.AudioM3U.mutagen._util import total_ordering, decode_terminated, enum, flags, \
     cdata, encode_endian, intround, bchr
-from ._util import BitPaddedInt, is_valid_frame_id
+from calibre_plugins.AudioM3U.mutagen.id3._util import BitPaddedInt, is_valid_frame_id
 
 
 @enum

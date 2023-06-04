@@ -9,9 +9,9 @@
 
 import struct
 
-from mutagen import StreamInfo, MutagenError
-from mutagen._file import FileType
-from mutagen._util import loadfile, endswith
+from calibre_plugins.AudioM3U.mutagen import StreamInfo, MutagenError
+from calibre_plugins.AudioM3U.mutagen._file import FileType
+from calibre_plugins.AudioM3U.mutagen._util import loadfile, endswith
 
 
 class SMFError(MutagenError):

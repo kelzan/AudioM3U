@@ -4,13 +4,13 @@
 import sys
 import os
 #sys.path.append("c:\\Users\\kelly\\Documents\\Source\\foodir")
-sys.path.append("c:\\Users\\kelly\\Documents\\Source\\AudioM3U")
+#sys.path.append("c:\\Users\\kelly\\Documents\\Source\\AudioM3U")
 #print(sys.path)
 
 #import foofile
-from .m3u_utils import get_tags
-from .m3u_utils import get_cover
-from .m3u_utils import playtime
+from calibre_plugins.AudioM3U.m3u_utils import get_tags
+from calibre_plugins.AudioM3U.m3u_utils import get_cover
+from calibre_plugins.AudioM3U.m3u_utils import playtime
 # def get_tags():
 #     True
 

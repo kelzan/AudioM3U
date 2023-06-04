@@ -28,14 +28,14 @@ from io import BytesIO
 from collections.abc import Sequence
 from datetime import timedelta
 
-from mutagen import FileType, Tags, StreamInfo, PaddingInfo
-from mutagen._constants import GENRES
-from mutagen._util import cdata, insert_bytes, DictProxy, MutagenError, \
+from calibre_plugins.AudioM3U.mutagen import FileType, Tags, StreamInfo, PaddingInfo
+from calibre_plugins.AudioM3U.mutagen._constants import GENRES
+from calibre_plugins.AudioM3U.mutagen._util import cdata, insert_bytes, DictProxy, MutagenError, \
     hashable, enum, get_size, resize_bytes, loadfile, convert_error, bchr, \
     reraise
-from ._atom import Atoms, Atom, AtomError
-from ._util import parse_full_atom
-from ._as_entry import AudioSampleEntry, ASEntryError
+from calibre_plugins.AudioM3U.mutagen.mp4._atom import Atoms, Atom, AtomError
+from calibre_plugins.AudioM3U.mutagen.mp4._util import parse_full_atom
+from calibre_plugins.AudioM3U.mutagen.mp4._as_entry import AudioSampleEntry, ASEntryError
 
 
 class error(MutagenError):

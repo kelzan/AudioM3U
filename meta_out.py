@@ -6,7 +6,7 @@ import sys
 import os
 
 # Temporary Hack to get mutagen working
-sys.path.append("c:\\Users\\kelly\\Documents\\Source\\AudioM3U")
+#sys.path.append("c:\\Users\\kelly\\Documents\\Source\\AudioM3U")
 
 # Import m3u handling utilities
 from calibre_plugins.AudioM3U.m3u_utils import get_tags

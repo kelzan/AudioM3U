@@ -11,9 +11,9 @@
 
 __all__ = ["AC3", "Open"]
 
-from mutagen import StreamInfo
-from mutagen._file import FileType
-from mutagen._util import (
+from calibre_plugins.AudioM3U.mutagen import StreamInfo
+from calibre_plugins.AudioM3U.mutagen._file import FileType
+from calibre_plugins.AudioM3U.mutagen._util import (
     BitReader,
     BitReaderError,
     MutagenError,

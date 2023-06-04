@@ -18,11 +18,11 @@ __all__ = ["OggOpus", "Open", "delete"]
 import struct
 from io import BytesIO
 
-from mutagen import StreamInfo
-from mutagen._util import get_size, loadfile, convert_error
-from mutagen._tags import PaddingInfo
-from mutagen._vorbis import VCommentDict
-from mutagen.ogg import OggPage, OggFileType, error as OggError
+from calibre_plugins.AudioM3U.mutagen import StreamInfo
+from calibre_plugins.AudioM3U.mutagen._util import get_size, loadfile, convert_error
+from calibre_plugins.AudioM3U.mutagen._tags import PaddingInfo
+from calibre_plugins.AudioM3U.mutagen._vorbis import VCommentDict
+from calibre_plugins.AudioM3U.mutagen.ogg import OggPage, OggFileType, error as OggError
 
 
 class error(OggError):

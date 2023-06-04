@@ -15,11 +15,11 @@ import warnings
 
 from optparse import SUPPRESS_HELP
 
-import mutagen
-import mutagen.id3
-from mutagen.id3 import Encoding, PictureType
+import calibre_plugins.AudioM3U.mutagen
+import calibre_plugins.AudioM3U.mutagen.id3
+from calibre_plugins.AudioM3U.mutagen.id3 import Encoding, PictureType
 
-from ._util import split_escape, SignalHandler, OptionParser
+from calibre_plugins.AudioM3U.mutagen._tools._util import split_escape, SignalHandler, OptionParser
 
 
 VERSION = (1, 3)

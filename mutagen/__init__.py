@@ -18,9 +18,9 @@ depending on tag or format. They may also be entirely different objects
 for certain keys, again depending on format.
 """
 
-from mutagen._util import MutagenError
-from mutagen._file import FileType, StreamInfo, File
-from mutagen._tags import Tags, Metadata, PaddingInfo
+from calibre_plugins.AudioM3U.mutagen._util import MutagenError
+from calibre_plugins.AudioM3U.mutagen._file import FileType, StreamInfo, File
+from calibre_plugins.AudioM3U.mutagen._tags import Tags, Metadata, PaddingInfo
 
 version = (1, 46, 1)
 """Version tuple."""

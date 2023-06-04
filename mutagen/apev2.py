@@ -34,8 +34,8 @@ import struct
 from io import BytesIO
 from collections.abc import MutableSequence
 
-from mutagen import Metadata, FileType, StreamInfo
-from mutagen._util import DictMixin, cdata, delete_bytes, total_ordering, \
+from calibre_plugins.AudioM3U.mutagen import Metadata, FileType, StreamInfo
+from calibre_plugins.AudioM3U.mutagen._util import DictMixin, cdata, delete_bytes, total_ordering, \
     MutagenError, loadfile, convert_error, seek_end, get_size, reraise
 
 

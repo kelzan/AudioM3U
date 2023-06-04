@@ -9,11 +9,11 @@
 import struct
 from typing import Dict, Type
 
-from mutagen._util import cdata, get_size
-from mutagen._tags import PaddingInfo
+from calibre_plugins.AudioM3U.mutagen._util import cdata, get_size
+from calibre_plugins.AudioM3U.mutagen._tags import PaddingInfo
 
-from ._util import guid2bytes, bytes2guid, CODECS, ASFError, ASFHeaderError
-from ._attrs import ASFBaseAttribute, ASFUnicodeAttribute
+from calibre_plugins.AudioM3U.mutagen.asf._util import guid2bytes, bytes2guid, CODECS, ASFError, ASFHeaderError
+from calibre_plugins.AudioM3U.mutagen.asf._attrs import ASFBaseAttribute, ASFUnicodeAttribute
 
 
 class BaseObject(object):

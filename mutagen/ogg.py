@@ -21,11 +21,11 @@ import zlib
 from io import BytesIO
 from typing import Type
 
-from mutagen import FileType
-from mutagen._util import cdata, resize_bytes, MutagenError, loadfile, \
+from calibre_plugins.AudioM3U.mutagen import FileType
+from calibre_plugins.AudioM3U.mutagen._util import cdata, resize_bytes, MutagenError, loadfile, \
     seek_end, bchr, reraise
-from mutagen._file import StreamInfo
-from mutagen._tags import Tags
+from calibre_plugins.AudioM3U.mutagen._file import StreamInfo
+from calibre_plugins.AudioM3U.mutagen._tags import Tags
 
 
 class error(MutagenError):

@@ -5,7 +5,7 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
 
-from ._util import loadfile
+from calibre_plugins.AudioM3U.mutagen._util import loadfile
 
 
 class PaddingInfo(object):

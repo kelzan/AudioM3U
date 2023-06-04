@@ -10,16 +10,16 @@
 import os
 import sys
 
-import mutagen.ogg
+import calibre_plugins.AudioM3U.mutagen.ogg
 
-from ._util import SignalHandler, OptionParser
+from calibre_plugins.AudioM3U.mutagen._tools._util import SignalHandler, OptionParser
 
 
 _sig = SignalHandler()
 
 
 def main(argv):
-    from mutagen.ogg import OggPage
+    from calibre_plugins.AudioM3U.mutagen.ogg import OggPage
     parser = OptionParser(
         usage="%prog [options] filename.ogg ...",
         description="Split Ogg logical streams using Mutagen.",

@@ -8,7 +8,7 @@
 
 import struct
 
-from mutagen._util import MutagenError
+from calibre_plugins.AudioM3U.mutagen._util import MutagenError
 
 
 class error(MutagenError):

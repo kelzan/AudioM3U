@@ -9,14 +9,14 @@
 
 import sys
 
-from ._util import SignalHandler, OptionParser
+from calibre_plugins.AudioM3U.mutagen._tools._util import SignalHandler, OptionParser
 
 
 _sig = SignalHandler()
 
 
 def main(argv):
-    from mutagen import File
+    from calibre_plugins.AudioM3U.mutagen import File
 
     parser = OptionParser(usage="usage: %prog [options] FILE [FILE...]")
     parser.add_option("--no-flac", help="Compatibility; does nothing.")

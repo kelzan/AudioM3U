@@ -11,13 +11,13 @@
 import sys
 import struct
 
-from mutagen import StreamInfo, FileType
+from calibre_plugins.AudioM3U.mutagen import StreamInfo, FileType
 
-from mutagen.id3 import ID3
-from mutagen._riff import RiffFile, InvalidChunk
-from mutagen._iff import error as IffError
-from mutagen.id3._util import ID3NoHeaderError, error as ID3Error
-from mutagen._util import (
+from calibre_plugins.AudioM3U.mutagen.id3 import ID3
+from calibre_plugins.AudioM3U.mutagen._riff import RiffFile, InvalidChunk
+from calibre_plugins.AudioM3U.mutagen._iff import error as IffError
+from calibre_plugins.AudioM3U.mutagen.id3._util import ID3NoHeaderError, error as ID3Error
+from calibre_plugins.AudioM3U.mutagen._util import (
     convert_error,
     endswith,
     loadfile,

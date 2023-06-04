@@ -7,7 +7,7 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
 
-from mutagen._util import MutagenError
+from calibre_plugins.AudioM3U.mutagen._util import MutagenError
 
 
 def is_valid_frame_id(frame_id):

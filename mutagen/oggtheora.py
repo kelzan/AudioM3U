@@ -17,11 +17,11 @@ __all__ = ["OggTheora", "Open", "delete"]
 
 import struct
 
-from mutagen import StreamInfo
-from mutagen._vorbis import VCommentDict
-from mutagen._util import cdata, get_size, loadfile, convert_error
-from mutagen._tags import PaddingInfo
-from mutagen.ogg import OggPage, OggFileType, error as OggError
+from calibre_plugins.AudioM3U.mutagen import StreamInfo
+from calibre_plugins.AudioM3U.mutagen._vorbis import VCommentDict
+from calibre_plugins.AudioM3U.mutagen._util import cdata, get_size, loadfile, convert_error
+from calibre_plugins.AudioM3U.mutagen._tags import PaddingInfo
+from calibre_plugins.AudioM3U.mutagen.ogg import OggPage, OggFileType, error as OggError
 
 
 class error(OggError):

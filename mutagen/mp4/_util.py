@@ -5,7 +5,7 @@
 # the Free Software Foundation; either version 2 of the License, or
 # (at your option) any later version.
 
-from mutagen._util import cdata
+from calibre_plugins.AudioM3U.mutagen._util import cdata
 
 
 def parse_full_atom(data):

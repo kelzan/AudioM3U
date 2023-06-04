@@ -10,13 +10,13 @@ import re
 import struct
 from itertools import zip_longest
 
-from mutagen._tags import Tags
-from mutagen._util import DictProxy, convert_error, read_full
+from calibre_plugins.AudioM3U.mutagen._tags import Tags
+from calibre_plugins.AudioM3U.mutagen._util import DictProxy, convert_error, read_full
 
-from ._util import BitPaddedInt, unsynch, ID3JunkFrameError, \
+from calibre_plugins.AudioM3U.mutagen.id3._util import BitPaddedInt, unsynch, ID3JunkFrameError, \
     ID3EncryptionUnsupportedError, is_valid_frame_id, error, \
     ID3NoHeaderError, ID3UnsupportedVersionError, ID3SaveConfig
-from ._frames import TDRC, APIC, TDOR, TIME, TIPL, TORY, TDAT, Frames_2_2, \
+from calibre_plugins.AudioM3U.mutagen.id3._frames import TDRC, APIC, TDOR, TIME, TIPL, TORY, TDAT, Frames_2_2, \
     TextFrame, TYER, Frame, IPLS, Frames
 
 
