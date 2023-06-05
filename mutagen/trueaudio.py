@@ -98,5 +98,5 @@ class EasyTrueAudio(TrueAudio):
         tags (`mutagen.easyid3.EasyID3`)
     """
 
-    from mutagen.easyid3 import EasyID3 as ID3
+    from calibre_plugins.AudioM3U.mutagen.easyid3 import EasyID3 as ID3
     ID3 = ID3  # type: ignore

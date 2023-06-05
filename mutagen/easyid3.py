@@ -124,7 +124,7 @@ class EasyID3(DictMixin, Metadata):
             try:
                 frame = id3[frameid]
             except KeyError:
-                id3.add(mutagen.id3.Frames[frameid](encoding=3, text=value))
+                id3.add(calibre_plugins.AudioM3U.mutagen.id3.Frames[frameid](encoding=3, text=value))
             else:
                 frame.encoding = 3
                 frame.text = value
@@ -157,7 +157,7 @@ class EasyID3(DictMixin, Metadata):
                     enc = 3
                     break
 
-            id3.add(mutagen.id3.TXXX(encoding=enc, text=value, desc=desc))
+            id3.add(calibre_plugins.AudioM3U.mutagen.id3.TXXX(encoding=enc, text=value, desc=desc))
 
         def deleter(id3, key):
             del id3[frameid]
@@ -263,7 +263,7 @@ def genre_set(id3, key, value):
     try:
         frame = id3["TCON"]
     except KeyError:
-        id3.add(mutagen.id3.TCON(encoding=3, text=value))
+        id3.add(calibre_plugins.AudioM3U.mutagen.id3.TCON(encoding=3, text=value))
     else:
         frame.encoding = 3
         frame.genres = value
@@ -278,7 +278,7 @@ def date_get(id3, key):
 
 
 def date_set(id3, key, value):
-    id3.add(mutagen.id3.TDRC(encoding=3, text=value))
+    id3.add(calibre_plugins.AudioM3U.mutagen.id3.TDRC(encoding=3, text=value))
 
 
 def date_delete(id3, key):
@@ -290,7 +290,7 @@ def original_date_get(id3, key):
 
 
 def original_date_set(id3, key, value):
-    id3.add(mutagen.id3.TDOR(encoding=3, text=value))
+    id3.add(calibre_plugins.AudioM3U.mutagen.id3.TDOR(encoding=3, text=value))
 
 
 def original_date_delete(id3, key):
@@ -318,7 +318,7 @@ def performer_set(id3, key, value):
     try:
         mcl = id3["TMCL"]
     except KeyError:
-        mcl = mutagen.id3.TMCL(encoding=3, people=[])
+        mcl = calibre_plugins.AudioM3U.mutagen.id3.TMCL(encoding=3, people=[])
         id3.add(mcl)
     mcl.encoding = 3
     people = [p for p in mcl.people if p[0] != wanted_role]
@@ -362,7 +362,7 @@ def musicbrainz_trackid_set(id3, key, value):
     try:
         frame = id3["UFID:http://musicbrainz.org"]
     except KeyError:
-        frame = mutagen.id3.UFID(owner="http://musicbrainz.org", data=value)
+        frame = calibre_plugins.AudioM3U.mutagen.id3.UFID(owner="http://musicbrainz.org", data=value)
         id3.add(frame)
     else:
         frame.data = value
@@ -383,7 +383,7 @@ def website_get(id3, key):
 def website_set(id3, key, value):
     id3.delall("WOAR")
     for v in value:
-        id3.add(mutagen.id3.WOAR(url=v))
+        id3.add(calibre_plugins.AudioM3U.mutagen.id3.WOAR(url=v))
 
 
 def website_delete(id3, key):
@@ -407,7 +407,7 @@ def gain_set(id3, key, value):
     try:
         frame = id3["RVA2:" + key[11:-5]]
     except KeyError:
-        frame = mutagen.id3.RVA2(desc=key[11:-5], gain=0, peak=0, channel=1)
+        frame = calibre_plugins.AudioM3U.mutagen.id3.RVA2(desc=key[11:-5], gain=0, peak=0, channel=1)
         id3.add(frame)
     frame.gain = gain
 
@@ -443,7 +443,7 @@ def peak_set(id3, key, value):
     try:
         frame = id3["RVA2:" + key[11:-5]]
     except KeyError:
-        frame = mutagen.id3.RVA2(desc=key[11:-5], gain=0, peak=0, channel=1)
+        frame = calibre_plugins.AudioM3U.mutagen.id3.RVA2(desc=key[11:-5], gain=0, peak=0, channel=1)
         id3.add(frame)
     frame.peak = peak
 

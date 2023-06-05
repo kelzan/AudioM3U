@@ -19,7 +19,7 @@ from calibre_plugins.AudioM3U.meta_in import ImportDialog
 from calibre_plugins.AudioM3U.meta_out import ExportDialog
 
 
-from qt.core import QToolButton, QMenu
+from qt.core import QToolButton, QWidget, QProgressBar, QPushButton, QApplication
 
 class InterfacePlugin(InterfaceAction):
 

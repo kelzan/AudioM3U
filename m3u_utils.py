@@ -239,7 +239,7 @@ def export_tags(playlist_path, update_fields):
                 #if "cover" in keys:
                 #    audio["covr"] = update_fields["cover"]
                 #audio.info.pprint()
-                print("SAVING!")
+                #print("SAVING!")
                 audio.save()
                 if "cover" in keys:
                     set_cover(line, update_fields["cover"])

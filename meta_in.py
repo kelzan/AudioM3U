@@ -13,12 +13,16 @@ from calibre_plugins.AudioM3U.m3u_utils import get_tags
 from calibre_plugins.AudioM3U.m3u_utils import get_cover
 from calibre_plugins.AudioM3U.m3u_utils import playtime
 
+from calibre_plugins.AudioM3U.progress import ProgressBarWindow
+
 from polyglot.builtins import cmp, iteritems, itervalues, string_or_bytes
 
-from qt.core import QDialog, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QCheckBox, QDialogButtonBox
+from qt.core import (QDialog, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QCheckBox, 
+                     QDialogButtonBox)
 from PyQt5.QtCore import (Qt, QCoreApplication, QMetaObject)
 
 from calibre_plugins.AudioM3U.config import prefs
+
 
 
 class ImportDialog(QDialog):
@@ -98,7 +102,16 @@ class ImportDialog(QDialog):
         QMetaObject.connectSlotsByName(self)
 
         self.setLayout(self.verticalLayout)
+
+        # Progress Bar Window
+        self.progress_window = ProgressBarWindow()
+        self.progress_window.cancel_button.clicked.connect(self.set_stop)
+
+        self.stop_op = False
         
+    def set_stop(self):
+        self.stop_op = True
+
     def accept(self):
         print("ACCEPT!")
         self.update_metadata()
@@ -141,7 +154,23 @@ class ImportDialog(QDialog):
         ids = list(map(self.gui.library_view.model().id, rows))
         db = self.db.new_api
         m3u_ids = list(filter(lambda x: (db.has_format(x, "M3U")), ids))
+
+        # Initialize progress bar window
+        show_progress = (len(m3u_ids)>3) # Only show progress dialog if we're updating at least 3 books
+        if (show_progress):
+            self.progress_window.progress_bar.setRange(0,len(m3u_ids)-1)
+            self.progress_window.show()
+
+        self.stop_op = False
+        i = 0
+
         for book_id in m3u_ids:
+            # Update the progress bar
+            if (show_progress):
+                self.progress_window.update_progress(i)
+            i += 1
+            if (self.stop_op): # Did we press 'cancel' from the progress bar?
+                break
             # Get the path for the .m3u file TODO: Change this to use 'format' as a memory image instead
             path = db.format_abspath(book_id, "M3U")
             print(f"Path: {path}")
@@ -204,9 +233,11 @@ class ImportDialog(QDialog):
             #self.gui.book_details.show_data(mi)
             #self.gui.book_details.reset_info()
             #self.gui.book_details.update_layout()
+
+        self.progress_window.hide()
             
         info_dialog(self, 'Updated files',
-                f'Updated the metadata in the files of {len(m3u_ids)} of {len(ids)} book(s)',
+                f'Updated the metadata in the files of {i} of {len(ids)} book(s)',
                 show=True)
 
     def config(self):

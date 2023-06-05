@@ -9,14 +9,13 @@ import os
 #sys.path.append("c:\\Users\\kelly\\Documents\\Source\\AudioM3U")
 
 # Import m3u handling utilities
-from calibre_plugins.AudioM3U.m3u_utils import get_tags
-from calibre_plugins.AudioM3U.m3u_utils import get_cover
-from calibre_plugins.AudioM3U.m3u_utils import playtime
 from calibre_plugins.AudioM3U.m3u_utils import export_tags
+
+from calibre_plugins.AudioM3U.progress import ProgressBarWindow
 
 from polyglot.builtins import cmp, iteritems, itervalues, string_or_bytes
 
-from qt.core import QDialog, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QCheckBox, QDialogButtonBox
+from qt.core import QDialog, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QDialogButtonBox
 from PyQt5.QtCore import (Qt, QCoreApplication, QMetaObject)
 
 from calibre_plugins.AudioM3U.config import prefs
@@ -99,7 +98,15 @@ class ExportDialog(QDialog):
         QMetaObject.connectSlotsByName(self)
 
         self.setLayout(self.verticalLayout)
+
+         # Progress Bar Window
+        self.progress_window = ProgressBarWindow()
+        self.progress_window.cancel_button.clicked.connect(self.set_stop)
+        self.stop_op = False
         
+    def set_stop(self):
+        self.stop_op = True
+       
     def accept(self):
         print("ACCEPT!")
         self.export_metadata()
@@ -137,7 +144,20 @@ class ExportDialog(QDialog):
         ids = list(map(self.gui.library_view.model().id, rows))
         db = self.db.new_api
         m3u_ids = list(filter(lambda x: (db.has_format(x, "M3U")), ids))
+
+        # Initialize progress bar window
+        self.progress_window.progress_bar.setRange(0,len(m3u_ids)-1)
+        self.progress_window.show()
+        self.stop_op = False
+        i = 0
+
         for book_id in m3u_ids:
+            # Update progress bar
+            self.progress_window.update_progress(i)
+            i += 1
+            if (self.stop_op): # Did we press 'cancel' from the progress bar?
+                break
+            
             # Get the path for the .m3u file TODO: Change this to use 'format' as a memory image instead
             path = db.format_abspath(book_id, "M3U")
             print(f"Path: {path}")
@@ -170,8 +190,11 @@ class ExportDialog(QDialog):
             #self.db.set_metadata(book_id, mi)
             #self.gui.library_view.model().refresh_ids([book_id])
             
+        # Hide the progress bar
+        self.progress_window.hide()
+
         info_dialog(self, 'Updated audio files',
-                f'Exported the metadata to the audio files for {len(m3u_ids)} of {len(ids)} book(s)',
+                f'Exported the metadata to the audio files for {i} of {len(ids)} book(s)',
                 show=True)
 
     def config(self):

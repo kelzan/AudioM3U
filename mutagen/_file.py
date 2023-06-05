@@ -232,42 +232,42 @@ def File(filething, options=None, easy=False):
     """
 
     if options is None:
-        from mutagen.asf import ASF
-        from mutagen.apev2 import APEv2File
-        from mutagen.flac import FLAC
+        from calibre_plugins.AudioM3U.mutagen.asf import ASF
+        from calibre_plugins.AudioM3U.mutagen.apev2 import APEv2File
+        from calibre_plugins.AudioM3U.mutagen.flac import FLAC
         if easy:
-            from mutagen.easyid3 import EasyID3FileType as ID3FileType
+            from calibre_plugins.AudioM3U.mutagen.easyid3 import EasyID3FileType as ID3FileType
         else:
-            from mutagen.id3 import ID3FileType
+            from calibre_plugins.AudioM3U.mutagen.id3 import ID3FileType
         if easy:
-            from mutagen.mp3 import EasyMP3 as MP3
+            from calibre_plugins.AudioM3U.mutagen.mp3 import EasyMP3 as MP3
         else:
-            from mutagen.mp3 import MP3
-        from mutagen.oggflac import OggFLAC
-        from mutagen.oggspeex import OggSpeex
-        from mutagen.oggtheora import OggTheora
-        from mutagen.oggvorbis import OggVorbis
-        from mutagen.oggopus import OggOpus
+            from calibre_plugins.AudioM3U.mutagen.mp3 import MP3
+        from calibre_plugins.AudioM3U.mutagen.oggflac import OggFLAC
+        from calibre_plugins.AudioM3U.mutagen.oggspeex import OggSpeex
+        from calibre_plugins.AudioM3U.mutagen.oggtheora import OggTheora
+        from calibre_plugins.AudioM3U.mutagen.oggvorbis import OggVorbis
+        from calibre_plugins.AudioM3U.mutagen.oggopus import OggOpus
         if easy:
-            from mutagen.trueaudio import EasyTrueAudio as TrueAudio
+            from calibre_plugins.AudioM3U.mutagen.trueaudio import EasyTrueAudio as TrueAudio
         else:
-            from mutagen.trueaudio import TrueAudio
-        from mutagen.wavpack import WavPack
+            from calibre_plugins.AudioM3U.mutagen.trueaudio import TrueAudio
+        from calibre_plugins.AudioM3U.mutagen.wavpack import WavPack
         if easy:
-            from mutagen.easymp4 import EasyMP4 as MP4
+            from calibre_plugins.AudioM3U.mutagen.easymp4 import EasyMP4 as MP4
         else:
-            from mutagen.mp4 import MP4
-        from mutagen.musepack import Musepack
-        from mutagen.monkeysaudio import MonkeysAudio
-        from mutagen.optimfrog import OptimFROG
-        from mutagen.aiff import AIFF
-        from mutagen.aac import AAC
-        from mutagen.ac3 import AC3
-        from mutagen.smf import SMF
-        from mutagen.tak import TAK
-        from mutagen.dsf import DSF
-        from mutagen.dsdiff import DSDIFF
-        from mutagen.wave import WAVE
+            from calibre_plugins.AudioM3U.mutagen.mp4 import MP4
+        from calibre_plugins.AudioM3U.mutagen.musepack import Musepack
+        from calibre_plugins.AudioM3U.mutagen.monkeysaudio import MonkeysAudio
+        from calibre_plugins.AudioM3U.mutagen.optimfrog import OptimFROG
+        from calibre_plugins.AudioM3U.mutagen.aiff import AIFF
+        from calibre_plugins.AudioM3U.mutagen.aac import AAC
+        from calibre_plugins.AudioM3U.mutagen.ac3 import AC3
+        from calibre_plugins.AudioM3U.mutagen.smf import SMF
+        from calibre_plugins.AudioM3U.mutagen.tak import TAK
+        from calibre_plugins.AudioM3U.mutagen.dsf import DSF
+        from calibre_plugins.AudioM3U.mutagen.dsdiff import DSDIFF
+        from calibre_plugins.AudioM3U.mutagen.wave import WAVE
         options = [MP3, TrueAudio, OggTheora, OggSpeex, OggVorbis, OggFLAC,
                    FLAC, AIFF, APEv2File, MP4, ID3FileType, WavPack,
                    Musepack, MonkeysAudio, OptimFROG, ASF, OggOpus, AAC, AC3,

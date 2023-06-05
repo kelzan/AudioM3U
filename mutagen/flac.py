@@ -167,7 +167,7 @@ class MetadataBlock(object):
         return data
 
 
-class StreamInfo(MetadataBlock, mutagen.StreamInfo):
+class StreamInfo(MetadataBlock, calibre_plugins.AudioM3U.mutagen.StreamInfo):
     """StreamInfo()
 
     FLAC stream information.
@@ -669,7 +669,7 @@ class Padding(MetadataBlock):
         return "<%s (%d bytes)>" % (type(self).__name__, self.length)
 
 
-class FLAC(mutagen.FileType):
+class FLAC(calibre_plugins.AudioM3U.mutagen.FileType):
     """FLAC(filething)
 
     A FLAC audio file.

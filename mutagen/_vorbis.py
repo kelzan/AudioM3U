@@ -56,7 +56,7 @@ class VorbisEncodingError(error):
     pass
 
 
-class VComment(mutagen.Tags, list):
+class VComment(calibre_plugins.AudioM3U.mutagen.Tags, list):
     """A Vorbis comment parser, accessor, and renderer.
 
     All comment ordering is preserved. A VComment is a list of
@@ -70,7 +70,7 @@ class VComment(mutagen.Tags, list):
         vendor (text): the stream 'vendor' (i.e. writer); default 'Mutagen'
     """
 
-    vendor = u"Mutagen " + mutagen.version_string
+    vendor = u"Mutagen " + calibre_plugins.AudioM3U.mutagen.version_string
 
     def __init__(self, data=None, *args, **kwargs):
         self._size = 0
