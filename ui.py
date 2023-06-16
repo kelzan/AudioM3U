@@ -6,20 +6,21 @@ __license__   = 'GPL v3'
 __copyright__ = '2023, Kelly Larson <kelly@kellylarson.com>'
 __docformat__ = 'restructuredtext en'
 
-if False:
-    # This is here to keep my python error checker from complaining about
-    # the builtin functions that will be defined by the plugin loading system
-    # You do not need this code in your plugins
-    get_icons = get_resources = None
+import os
+import io
 
 # The class that all interface action plugins must inherit from
 from calibre.gui2.actions import InterfaceAction
 from calibre_plugins.AudioM3U.main import DemoDialog
 from calibre_plugins.AudioM3U.meta_in import ImportDialog
 from calibre_plugins.AudioM3U.meta_out import ExportDialog
+from calibre_plugins.AudioM3U.inspect import InspectDialog
 
+from calibre_plugins.AudioM3U.m3u_utils import create_m3u
+from calibre.ebooks.metadata.book.base import Metadata
 
-from qt.core import QToolButton, QWidget, QProgressBar, QPushButton, QApplication
+from calibre.gui2 import error_dialog
+from qt.core import QToolButton, QFileDialog, QWidget, QProgressBar, QPushButton, QApplication
 
 class InterfacePlugin(InterfaceAction):
 
@@ -50,7 +51,8 @@ class InterfacePlugin(InterfaceAction):
         # are not found in the zip file will result in null QIcons.
         #icon = get_icons('images/icon.png', 'Audio M3U Plugin')
         icons = get_icons(["images/icon.png", "images/arrow.png", "images/arrow-180.png", "images/disc.png",
-                           "images/plus.png", "images/question.png", "images/tick.png", "images/checkbox.png"])
+                           "images/plus.png", "images/question.png", "images/tick.png", "images/checkbox.png",
+                           "images/magnifier.png"])
 
         # The qaction is automatically created from the action_spec defined
         # above
@@ -63,10 +65,12 @@ class InterfacePlugin(InterfaceAction):
                                 None, "Import metadata from M3U audio files", self.do_import)    
         self.create_menu_action(m, "m3u_export", "Export metadata", icons["images/arrow-180.png"], 
                                 None, "Export metadata to M3U audio files", self.do_export)
-        self.create_menu_action(m, "m3u_addm3u", "Add M3U to book", icons["images/plus.png"], 
-                                None, "Creates an M3U file for existing book", self.do_addm3u)
-        self.create_menu_action(m, "m3u_createm3u", "Create M3U", icons["images/disc.png"], 
-                                None, "Creates an M3U file and adds to library as new book", self.do_createm3u)
+        self.create_menu_action(m, "m3u_addm3u", "Create/Update M3U for book(s)", icons["images/plus.png"], 
+                                None, "Creates and adds M3U files for existing books", self.do_addm3u)
+        self.create_menu_action(m, "m3u_createm3u", "Create new M3U book", icons["images/disc.png"], 
+                                None, "Creates an M3U file and adds it to library as a new book", self.do_createm3u)
+        self.create_menu_action(m, "m3u_inspectm3u", "Inspect M3U", icons["images/magnifier.png"],
+                                None, "Inspects contents of M3U files", self.do_inspect)
         self.create_menu_action(m, "m3u_validate", "Validate M3U", icons["images/tick.png"], 
                                 None, "Validates M3U audio file paths", self.do_validate)
         self.create_menu_action(m, "m3u_customize", "Customize", icons["images/checkbox.png"], 
@@ -77,6 +81,14 @@ class InterfacePlugin(InterfaceAction):
         self.min_dlg = None # Placeholder for Metadata Import Dialog
         self.mout_dlg = None # Placeholder for Metadata Export Dialog
 
+
+    def library_changed(self, db):
+        #print("LIBRARY CHANGED!")
+        if (self.min_dlg != None):
+            self.min_dlg.db = db
+        if (self.mout_dlg != None):
+            self.mout_dlg.db = db
+
 #    def do_import(self):
 #        print("Do Import")
 
@@ -84,10 +96,116 @@ class InterfacePlugin(InterfaceAction):
     #     print("Do Export")
 
     def do_addm3u(self):
-        print("do addm3u")
+        #print("do addm3u")
+        #from calibre.ebooks.metadata.meta import set_metadata
+        #from calibre.gui2 import error_dialog, info_dialog
+
+        # Get currently selected books
+        rows = self.gui.library_view.selectionModel().selectedRows()
+        if not rows or len(rows) == 0:
+            return error_dialog(self.gui, 'Cannot update metadata',
+                             'No books selected', show=True)
+        # Map the rows to book ids
+        ids = list(map(self.gui.library_view.model().id, rows))
+        db = self.gui.current_db.new_api
+
+        id_cnt = 1
+        for book_id in ids:
+            mi = db.get_metadata(book_id, get_cover=False)
+            title = mi.get("title", "Unknown")
+            author = mi.get("authors",["Unknown"])
+            #print(f"authors: {' & '.join(author)}")
+            dialog_title = f"Add/Update M3U for \"{' & '.join(author)} - {title}\" ({id_cnt}/{len(ids)})"
+            dirpath = str(QFileDialog.getExistingDirectory(self.gui, dialog_title))
+            if (dirpath == ""):
+                return # We pressed 'cancel'
+            # Now scan the directory for audiofiles, and create M3U in memory
+            m3u = create_m3u(dirpath)
+            m3u_flat = "\n".join(m3u)
+
+            # Skip if we don't find any audio files
+            if (not len(m3u)):
+                error_dialog(self.gui, 'Cannot add M3U','No audio files found in directory', show=True)
+                continue
+
+            # Create the map with Bytes data and Metadata for the new book
+            #md = Metadata(title=booktitle)
+            bb = m3u_flat.encode()
+            bf = io.BytesIO(bb)
+
+            # Add the new book to the library
+            db = self.gui.current_db.new_api
+            db.add_format(book_id, "M3U", bf)
+
+            id_cnt += 1
+            self.gui.library_view.model().refresh_ids([book_id])
+
+        # Now mark the ids we updated
+        self.gui.current_db.set_marked_ids(ids)
+
+        # Now set the current index back to it's current position again to trigger a book detail panel refresh
+        current_idx = self.gui.library_view.currentIndex()
+        if current_idx.isValid():
+            self.gui.library_view.model().current_changed(current_idx, current_idx)
 
     def do_createm3u(self):
-        print("do createm3u")
+        # Open Dialog window to get the directory
+        dirpath = str(QFileDialog.getExistingDirectory(self.gui, "Select Directory containing audio files"))
+        booktitle = os.path.basename(dirpath)
+        print(f"dirpath: {dirpath}, title: {booktitle}")
+        if (dirpath == ""):
+            return # We pressed 'cancel'
+        
+        # Now scan the directory for audiofiles, and create M3U in memory
+        m3u = create_m3u(dirpath)
+        m3u_flat = "\n".join(m3u)
+
+        if (not len(m3u)):
+            return error_dialog(self.gui, 'Cannot add M3U','No audio files found in directory', show=True)
+
+        # Create the map with Bytes data and Metadata for the new book
+        md = Metadata(title=booktitle)
+        bb = m3u_flat.encode()
+        bf = io.BytesIO(bb) # Docs say that byte array should work, but only seems to work when I make it BytesIO object
+        bookmap = [(md, {'M3U' : bf})]
+        #print(f"{type(bookmap)}")
+        
+        # Add the new book to the library
+        db = self.gui.current_db.new_api
+        one, two = db.add_books(bookmap)
+
+        # Now do a bunch of stuff to make the addition visible in the gui
+        self.gui.current_db.data.books_added(one)
+        self.gui.db_images.reset()
+        self.gui.library_view.model().books_added(len(one))
+        self.gui.library_view.set_current_row(0)
+        self.gui.refresh_cover_browser()
+        self.gui.tags_view.recount()
+
+    #    bookmap = (md, {'M3U':'C:\Users\kelly\Documents\Source\Andy Weir\Ada Palmer - Seven Surrenders.m3u'})
+        #path_to_file = "C:/Users/kelly/Documents/Source/Andy Weir/Ada Palmer - Seven Surrenders.m3u"
+        #testtext = "Now is the time for all good men, etc."
+        #btext = testtext.encode()
+        #b = bytearray()
+        #b.extend(map(ord,testtext))
+        #bb = bytes(map(ord,m3u_flat))
+
+        #bookmap = [(md, {'M3U' : path_to_file})]
+
+        #self.gui.library_view.model().refresh_ids(one)
+        #self.gui.library_view.model().books_added(1)
+        #self.gui.library_view.model().count_changed()
+        #self.gui.refresh_cover_browser()
+        #self.refresh_gui(1)
+        #db.add_books([path_to_file],[md])
+        #print(f"one {one}, two {two}")
+        #self.gui.current_db.set_marked_ids(one)
+
+        # Tell the GUI to search for all marked records
+        #self.gui.search.setEditText('marked:true')
+        #self.gui.search.do_search()
+
+
 
     def do_validate(self):
         print("do validate")
@@ -115,7 +233,6 @@ class InterfacePlugin(InterfaceAction):
         d.show()
 
     def do_import(self):
-        print("Do Import")
         # The base plugin object defined in __init__.py
         base_plugin_object = self.interface_action_base_plugin
         # Show the config dialog
@@ -132,7 +249,6 @@ class InterfacePlugin(InterfaceAction):
         self.min_dlg.show()
 
     def do_export(self):
-        print("Do Export")
         # The base plugin object defined in __init__.py
         base_plugin_object = self.interface_action_base_plugin
         # Show the config dialog
@@ -147,6 +263,22 @@ class InterfacePlugin(InterfaceAction):
         if (self.mout_dlg == None):
             self.mout_dlg = ExportDialog(self.gui, self.qaction.icon(), do_user_config)
         self.mout_dlg.show()
+
+    def do_inspect(self):
+        # The base plugin object defined in __init__.py
+        base_plugin_object = self.interface_action_base_plugin
+        # Show the config dialog
+        # The config dialog can also be shown from within
+        # Preferences->Plugins, which is why the do_user_config
+        # method is defined on the base plugin class
+        do_user_config = base_plugin_object.do_user_config
+
+        # self.gui is the main calibre GUI. It acts as the gateway to access
+        # all the elements of the calibre user interface, it should also be the
+        # parent of the dialog
+        inspect_dlg = InspectDialog(self.gui, self.qaction.icon(), do_user_config)
+        inspect_dlg.init_data()
+        inspect_dlg.show()
 
     def apply_settings(self):
         from calibre_plugins.AudioM3U.config import prefs

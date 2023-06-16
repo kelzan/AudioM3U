@@ -48,6 +48,8 @@ def get_metadata(file_path):
             tagvals["mode"] = "Mono"
         else:
             tagvals["mode"] = "Unknown"
+        # audio = ID3(file_path)
+        # print(f"tags: {audio.keys()}")
 
     elif file_extension == ".m4a" or file_extension == ".m4b":
         audio = MP4(file_path)
@@ -79,8 +81,8 @@ def tally_metadata(file_path):
     tagvals["num_files"] += 1
     audio = File(file_path)
     duration += audio.info.length
-    #print(f"Adding {int(audio.info.length)} seconds, total now {tagvals['duration']}")
-    #print(f"duration is {duration}")
+    # print(f"Adding {int(audio.info.length)} seconds, total now {tagvals['duration']}")
+    # print(f"duration is {duration}")
 
 def playtime(seconds):
     """
@@ -243,3 +245,22 @@ def export_tags(playlist_path, update_fields):
                 audio.save()
                 if "cover" in keys:
                     set_cover(line, update_fields["cover"])
+
+def create_m3u(book_directory):
+    # Retrieve all audio files in the book directory
+    audio_files = [
+        file
+        for file in os.listdir(book_directory)
+        if file.lower().endswith((".mp3", ".wma", ".m4a", ".m4b"))
+    ]
+
+    # Sort the audio files alphabetically
+    audio_files.sort()
+    m3u = []
+
+    for audio_file in audio_files:
+        m3u.append(os.path.join(book_directory, audio_file))
+        #file_path = file_path.replace("\\","/")
+
+    #print(f"M3U created: {m3u}")
+    return m3u

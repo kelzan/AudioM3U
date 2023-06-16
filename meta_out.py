@@ -5,9 +5,6 @@ __docformat__ = 'restructuredtext en'
 import sys
 import os
 
-# Temporary Hack to get mutagen working
-#sys.path.append("c:\\Users\\kelly\\Documents\\Source\\AudioM3U")
-
 # Import m3u handling utilities
 from calibre_plugins.AudioM3U.m3u_utils import export_tags
 
@@ -46,8 +43,6 @@ class ExportDialog(QDialog):
         self.setWindowTitle('Export metadata')
         self.setupWidgets()
 
-#        self.show()
-
     def setupWidgets(self):
         """
         Create widgets for to do list GUI and arrange them in window
@@ -72,16 +67,6 @@ class ExportDialog(QDialog):
             list_item.setText(item)
             self.field_list.addItem(list_item)
         self.verticalLayout.addWidget(self.field_list)
-
-        # No overwrite checkbox
-        # self.blank_over_checkbox = QCheckBox(self)
-        # self.blank_over_checkbox.setObjectName("blank_over_checkbox")
-        # self.verticalLayout.addWidget(self.blank_over_checkbox)
-
-        # # Only Blank Fields Import checkbox
-        # self.only_blank_cb = QCheckBox(self)
-        # self.only_blank_cb.setObjectName("only_bank_cb")
-        # self.verticalLayout.addWidget(self.only_blank_cb)
 
         # Dialog Button Box
         self.buttonBox = QDialogButtonBox(self)
@@ -117,8 +102,6 @@ class ExportDialog(QDialog):
         _translate = QCoreApplication.translate
         ImportDialog.setWindowTitle(_translate("ExportDialog", "Export Metadata"))
         self.top_label.setText(_translate("ExportDialog", "Metadata fields to export to audio files:"))
-        #self.blank_over_checkbox.setText(_translate("ImportDialog", "Allow blank import data to overwrite existing data"))
-        #self.only_blank_cb.setText(_translate("ImportDialog", "Only import to blank fields, don\'t overwrite existing data"))
 
     def is_checked(self, label):
         found = self.field_list.findItems(label, Qt.MatchExactly)
@@ -161,15 +144,9 @@ class ExportDialog(QDialog):
             # Get the path for the .m3u file TODO: Change this to use 'format' as a memory image instead
             path = db.format_abspath(book_id, "M3U")
             print(f"Path: {path}")
-            # Now get tags from the audio files
-            #audio_tags = get_tags(path)
             # Get the current metadata for this book from the db
             mi = db.get_metadata(book_id, get_cover=True, cover_as_data=True)
-            #fmts = db.formats(book_id)
-            #if not fmts:
-            #    continue
             # Now determine which fields, based on config and options, need to be updated
-            #update_all = not self.only_blank_cb.isChecked()
             export_fields = list(filter(lambda x: (self.is_checked(x)),self.fields))
 
             export_meta = {}

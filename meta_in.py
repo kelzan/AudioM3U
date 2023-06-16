@@ -5,9 +5,6 @@ __docformat__ = 'restructuredtext en'
 import sys
 import os
 
-# Temporary Hack to get mutagen working
-#sys.path.append("c:\\Users\\kelly\\Documents\\Source\\AudioM3U")
-
 # Import m3u handling utilities
 from calibre_plugins.AudioM3U.m3u_utils import get_tags
 from calibre_plugins.AudioM3U.m3u_utils import get_cover
@@ -132,11 +129,6 @@ class ImportDialog(QDialog):
         #print(f"{label} Found: {type(found)} {len(found)}")
         return found[0].checkState() == Qt.Checked
     
-    # def can_write(self, is_field_null, is_import_null):
-    #     print(f"({self.blank_over_checkbox.isChecked()} or ({not is_import_null})) and (({not self.only_blank_cb.isChecked()}) or {not is_field_null})")
-    #     return ((self.blank_over_checkbox.isChecked() or (not is_import_null)) and
-    #             ((not self.only_blank_cb.isChecked()) or (not is_field_null)))
-
     def update_metadata(self):
         '''
         Set the metadata in the files in the selected book's record to
@@ -173,7 +165,7 @@ class ImportDialog(QDialog):
                 break
             # Get the path for the .m3u file TODO: Change this to use 'format' as a memory image instead
             path = db.format_abspath(book_id, "M3U")
-            print(f"Path: {path}")
+            #print(f"Path: {path}")
             # Now get tags from the audio files
             audio_tags = get_tags(path)
             # Get the current metadata for this book from the db
@@ -233,6 +225,11 @@ class ImportDialog(QDialog):
             #self.gui.book_details.show_data(mi)
             #self.gui.book_details.reset_info()
             #self.gui.book_details.update_layout()
+
+        # Now set the current index back to it's current position again to trigger a window refresh
+        current_idx = self.gui.library_view.currentIndex()
+        if current_idx.isValid():
+            self.gui.library_view.model().current_changed(current_idx, current_idx)
 
         self.progress_window.hide()
             
