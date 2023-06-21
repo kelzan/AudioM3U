@@ -51,7 +51,7 @@ class ImportDialog(QDialog):
 
     def setupWidgets(self):
         """
-        Create widgets for to do list GUI and arrange them in window
+        Create widgets for metadata input GUI and arrange them in window
         """
         # create grid layout
         self.verticalLayout = QVBoxLayout()
@@ -137,6 +137,8 @@ class ImportDialog(QDialog):
         from calibre.ebooks.metadata.meta import set_metadata
         from calibre.gui2 import error_dialog, info_dialog
 
+        #print(f"prefs: {prefs['hello_world_msg']}")
+        #prefs['testit'] = "this is a test"
         # Get currently selected books
         rows = self.gui.library_view.selectionModel().selectedRows()
         if not rows or len(rows) == 0:
@@ -188,39 +190,57 @@ class ImportDialog(QDialog):
                     if "title" in audio_tags:
                         mi.set("title", audio_tags['title'])
             if (self.is_checked("narrator")):
-                if (update_all or mi.is_null("#narrator")):
+                column = prefs['narrator']['column']
+                if (update_all or mi.is_null(column)):
                     if "narrator" in audio_tags:
-                        mi.set("#narrator", audio_tags['narrator'])
+                        mi.set(column, audio_tags['narrator'])
             if (self.is_checked("duration")):
-                if (update_all or mi.is_null("#duration")):
-                    mi.set("#duration", playtime(audio_tags['duration']))
+                column = prefs['duration']['column']
+                if (update_all or mi.is_null(column)):
+                    if (prefs['duration']['format'] == 'text'):
+                        mi.set(column, playtime(audio_tags['duration']))
+                    elif (prefs['duration']['format'] == 'int'):
+                        mi.set(column, audio_tags['duration'])
             if (self.is_checked("bitrate")):
-                if (update_all or mi.is_null("#bitrate")):
-                    mi.set("#bitrate", audio_tags['bitrate'])
+                column = prefs['bitrate']['column']
+                if (update_all or mi.is_null(column)):
+                    mi.set(column, audio_tags['bitrate'])
             if (self.is_checked("sample_rate")):
-                if (update_all or mi.is_null("#sample_rate")):
-                    mi.set("#sample_rate", audio_tags['sample_rate'])
+                column = prefs['sample']['column']
+                if (update_all or mi.is_null(column)):
+                    mi.set(column, audio_tags['sample_rate'])
             if (self.is_checked("total_size")):
-                if (update_all or mi.is_null("#size")):
-                    mi.set("#size", audio_tags['size'] / (1024*1024))
+                column = prefs['size']['column']
+                if (update_all or mi.is_null(column)):
+                    if (prefs['size']['format'] == 'float'):
+                        mi.set(column, audio_tags['size'] / (1024*1024))
+                    elif (prefs['size']['format'] == 'int'):
+                        mi.set(column, audio_tags['size'])
             if (self.is_checked("type")):
-                if (update_all or mi.is_null("#type")):
-                    mi.set("#type", audio_tags['type'])
+                column = prefs['type']['column']
+                if (update_all or mi.is_null(column)):
+                    mi.set(column, audio_tags['type'])
             if (self.is_checked("mode")):
-                if (update_all or mi.is_null("#mode")):
-                    mi.set("#mode", audio_tags['mode'])
+                column = prefs['mode']['column']
+                if (update_all or mi.is_null(column)):
+                    mi.set(column, audio_tags['mode'])
             if (self.is_checked("num_files")):
-                if (update_all or mi.is_null("#num_files")):
-                    mi.set("#num_files", audio_tags['num_files'])
+                column = prefs['numfiles']['column']
+                if (update_all or mi.is_null(column)):
+                    mi.set(column, audio_tags['num_files'])
 
             if (self.is_checked("cover")):
                 if (update_all or mi.is_null("cover_data")):
                     cover = get_cover(path)
                     mi.set("cover_data", cover) # This is a ('type', 'data') tuple
 
+            #print(f"current genre: {mi.get('#genre')} {type(mi.get('#genre'))}")
+            #mi.set("#genre", "foo.genre, bar.genre")
+            
             self.db.set_metadata(book_id, mi)
 
             self.gui.library_view.model().refresh_ids([book_id])
+            #print(f"Genre for {book_id}: {db.field_for('#genre',book_id)} {type(db.field_for('#genre',book_id))}")
             #print(f"type: {type(self.gui.book_details)}")
             #self.gui.book_details.show_data(mi)
             #self.gui.book_details.reset_info()
@@ -236,8 +256,24 @@ class ImportDialog(QDialog):
         info_dialog(self, 'Updated files',
                 f'Updated the metadata in the files of {i} of {len(ids)} book(s)',
                 show=True)
+        
+        #self.footest()
+
+
+
+
+    def footest(self):        
+        column_types = ['float','int']
+        custom_columns = self.gui.library_view.model().custom_columns
+        print(f"custom_columns: {custom_columns}")
+        available_columns = {}
+        for key, column in custom_columns.items():
+            typ = column['datatype']
+            print(f"key: {key}, typ: {typ}, column: {column}")
+            if typ in column_types:
+                available_columns[key] = column
 
     def config(self):
         self.do_user_config(parent=self)
         # Apply the changes
-        self.label.setText(prefs['hello_world_msg'])
+        #self.label.setText(prefs['hello_world_msg'])

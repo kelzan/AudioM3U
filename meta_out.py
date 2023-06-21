@@ -45,7 +45,7 @@ class ExportDialog(QDialog):
 
     def setupWidgets(self):
         """
-        Create widgets for to do list GUI and arrange them in window
+        Create widgets for metadata output GUI and arrange them in window
         """
         # create grid layout
         self.verticalLayout = QVBoxLayout()

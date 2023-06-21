@@ -43,7 +43,7 @@ class InspectDialog(QDialog):
 
     def setupWidgets(self):
         """
-        Create widgets for to do list GUI and arrange them in window
+        Create widgets for Inspect dialog and arrange them in window
         """
 
         # Create Vertical layout
@@ -110,19 +110,22 @@ class InspectDialog(QDialog):
         # Get currently selected books
         rows = self.gui.library_view.selectionModel().selectedRows()
         if not rows or len(rows) == 0:
-            return error_dialog(self.gui, 'Cannot browse M3U files',
-                             'No books selected', show=True)
+            error_dialog(self.gui, 'Cannot browse M3U files',
+                         'No books selected', show=True)
+            return False
         # Map the rows to book ids
         ids = list(map(self.gui.library_view.model().id, rows))
         db = self.db.new_api
         self.m3u_ids = list(filter(lambda x: (db.has_format(x, "M3U")), ids))
         self.curm3u = 0
         if len(self.m3u_ids) == 0:
-            return error_dialog(self.gui, 'Cannot browse M3U files',
-                             'No books selected', show=True)
+            error_dialog(self.gui, 'Cannot browse M3U files',
+                         'No books selected', show=True)
+            return False
         self.set_label()
         self.load_text()
         self.enable_buttons()
+        return True
 
     def set_label(self):
         db = self.db.new_api

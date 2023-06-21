@@ -15,6 +15,7 @@ from calibre_plugins.AudioM3U.main import DemoDialog
 from calibre_plugins.AudioM3U.meta_in import ImportDialog
 from calibre_plugins.AudioM3U.meta_out import ExportDialog
 from calibre_plugins.AudioM3U.inspect import InspectDialog
+from calibre_plugins.AudioM3U.validate import ValidateDialog
 
 from calibre_plugins.AudioM3U.m3u_utils import create_m3u
 from calibre.ebooks.metadata.book.base import Metadata
@@ -80,6 +81,7 @@ class InterfacePlugin(InterfaceAction):
         
         self.min_dlg = None # Placeholder for Metadata Import Dialog
         self.mout_dlg = None # Placeholder for Metadata Export Dialog
+        self.validate_dlg = None # Placeholder for Validate Dialog
 
 
     def library_changed(self, db):
@@ -88,6 +90,8 @@ class InterfacePlugin(InterfaceAction):
             self.min_dlg.db = db
         if (self.mout_dlg != None):
             self.mout_dlg.db = db
+        if (self.validate_dlg != None):
+            self.validate_dlg.db = db
 
 #    def do_import(self):
 #        print("Do Import")
@@ -209,9 +213,23 @@ class InterfacePlugin(InterfaceAction):
 
     def do_validate(self):
         print("do validate")
+        # self.gui is the main calibre GUI. It acts as the gateway to access
+        # all the elements of the calibre user interface, it should also be the
+        # parent of the dialog
+        if (self.validate_dlg == None):
+            # The base plugin object defined in __init__.py
+            base_plugin_object = self.interface_action_base_plugin
+            # Show the config dialog
+            # The config dialog can also be shown from within
+            # Preferences->Plugins, which is why the do_user_config
+            # method is defined on the base plugin class
+            do_user_config = base_plugin_object.do_user_config
+            self.validate_dlg = ValidateDialog(self.gui, self.qaction.icon(), do_user_config)
+        self.validate_dlg.show()
 
     def do_customize(self):
         print("do customize")
+        self.interface_action_base_plugin.do_user_config(self.gui)
 
     def do_help(self):
         print("do_help")
@@ -241,6 +259,10 @@ class InterfacePlugin(InterfaceAction):
         # method is defined on the base plugin class
         do_user_config = base_plugin_object.do_user_config
 
+        # If the columns don't check out, show error dialogs and exit
+        if not self.validate_columns():
+            return
+
         # self.gui is the main calibre GUI. It acts as the gateway to access
         # all the elements of the calibre user interface, it should also be the
         # parent of the dialog
@@ -257,6 +279,10 @@ class InterfacePlugin(InterfaceAction):
         # method is defined on the base plugin class
         do_user_config = base_plugin_object.do_user_config
 
+        # If the columns don't check out, show error dialogs and exit
+        if not self.validate_columns():
+            return
+        
         # self.gui is the main calibre GUI. It acts as the gateway to access
         # all the elements of the calibre user interface, it should also be the
         # parent of the dialog
@@ -277,8 +303,32 @@ class InterfacePlugin(InterfaceAction):
         # all the elements of the calibre user interface, it should also be the
         # parent of the dialog
         inspect_dlg = InspectDialog(self.gui, self.qaction.icon(), do_user_config)
-        inspect_dlg.init_data()
-        inspect_dlg.show()
+        if (inspect_dlg.init_data()):
+            inspect_dlg.show()
+
+    def validate_columns(self):
+        from calibre.gui2 import error_dialog
+        from calibre_plugins.AudioM3U.config import prefs
+        columns = ["narrator", "duration", "size", "sample", "bitrate", "mode", "type", "numfiles", "genre"]
+        custom_columns = self.gui.library_view.model().custom_columns
+        #print(f"custom_columns: {custom_columns}")
+        for column in columns:
+            if prefs[column]['enabled']:
+                colname = prefs[column]['column']
+                coltype = prefs[column]['format']
+                print(f"Column type for '{column},' name: {colname}, type: {custom_columns[colname]['datatype']}")
+                if not prefs[column]['column'] in custom_columns:
+                    error_dialog(self.gui, 'Invalid custom column',
+                                 f"Custom column configured for '{column}' does not exist: '{colname}'", show=True)
+                    return False
+                if custom_columns[colname]['datatype'] != coltype:
+                    error_dialog(self.gui, 'Invalid custom column type',
+                                     f"Custom column for '{column}' is type '{custom_columns[colname]['datatype']},' should be '{coltype}'",
+                                     show=True)
+                    return False
+                    
+        return True
+
 
     def apply_settings(self):
         from calibre_plugins.AudioM3U.config import prefs
