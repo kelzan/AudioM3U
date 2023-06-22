@@ -12,10 +12,10 @@ from calibre_plugins.AudioM3U.m3u_utils import playtime
 
 from calibre_plugins.AudioM3U.progress import ProgressBarWindow
 
-from polyglot.builtins import cmp, iteritems, itervalues, string_or_bytes
+#from polyglot.builtins import cmp, iteritems, itervalues, string_or_bytes
 
 from qt.core import (QDialog, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QCheckBox, 
-                     QDialogButtonBox)
+                     QDialogButtonBox, QGridLayout, QPushButton)
 from PyQt5.QtCore import (Qt, QCoreApplication, QMetaObject)
 
 from calibre_plugins.AudioM3U.config import prefs
@@ -29,7 +29,7 @@ class ImportDialog(QDialog):
         self.gui = gui
         self.do_user_config = do_user_config
 
-        self.fields = ["cover", "title", "author", "narrator", "duration", "total_size", "sample_rate", "bitrate", "mode", "type", "num_files"]
+        self.fields = ["cover", "title", "author", "narrator", "duration", "size", "sample_rate", "bitrate", "mode", "type", "num_files"]
 
         # The current database shown in the GUI
         # db is an instance of the class LibraryDatabase from db/legacy.py
@@ -74,6 +74,29 @@ class ImportDialog(QDialog):
             self.field_list.addItem(list_item)
         self.verticalLayout.addWidget(self.field_list)
 
+        # Selection Button Grid
+        self.gridLayout = QGridLayout()
+        self.gridLayout.setContentsMargins(-1, 0, -1, -1)
+        self.gridLayout.setObjectName("gridLayout")
+        self.nonePushButton = QPushButton(self)
+        self.nonePushButton.setObjectName("nonePushButton")
+        self.gridLayout.addWidget(self.nonePushButton, 0, 1, 1, 1)
+        self.allPushButton = QPushButton(self)
+        self.allPushButton.setObjectName("allPushButton")
+        self.gridLayout.addWidget(self.allPushButton, 0, 0, 1, 1)
+        self.defaultPushButton = QPushButton(self)
+        self.defaultPushButton.setObjectName("defaultPushButton")
+        self.gridLayout.addWidget(self.defaultPushButton, 1, 0, 1, 1)
+        self.setDefaultPushButton = QPushButton(self)
+        self.setDefaultPushButton.setObjectName("setDefaultPushButton")
+        self.gridLayout.addWidget(self.setDefaultPushButton, 1, 1, 1, 1)
+        self.verticalLayout.addLayout(self.gridLayout)
+
+        self.nonePushButton.setText("Select None")
+        self.allPushButton.setText("Select All")
+        self.defaultPushButton.setText("Select Default")
+        self.setDefaultPushButton.setText("Set as Default")
+
         # No overwrite checkbox
         # self.blank_over_checkbox = QCheckBox(self)
         # self.blank_over_checkbox.setObjectName("blank_over_checkbox")
@@ -100,14 +123,50 @@ class ImportDialog(QDialog):
 
         self.setLayout(self.verticalLayout)
 
+        # Hide unenabled fields
+        self.apply_settings()
+
         # Progress Bar Window
         self.progress_window = ProgressBarWindow()
         self.progress_window.cancel_button.clicked.connect(self.set_stop)
 
         self.stop_op = False
+
+        # Connect button actions
+        self.nonePushButton.clicked.connect(self.do_sel_none)
+        self.allPushButton.clicked.connect(self.do_sel_all)
+        self.defaultPushButton.clicked.connect(self.do_sel_default)
+        self.setDefaultPushButton.clicked.connect(self.do_set_default)
         
     def set_stop(self):
         self.stop_op = True
+
+    def do_sel_none(self):
+        all_items = self.field_list.findItems('', Qt.MatchRegularExpression)
+        for item in all_items:
+            item.setCheckState(Qt.Unchecked)
+
+    def do_sel_all(self):
+        all_items = self.field_list.findItems('', Qt.MatchRegularExpression)
+        for item in all_items:
+            item.setCheckState(Qt.Checked)
+
+    def do_sel_default(self):
+        checked_items = prefs['export_selected']
+        all_items = self.field_list.findItems('', Qt.MatchRegularExpression)
+        for item in all_items:
+            if item.text() in checked_items:
+                item.setCheckState(Qt.Checked)
+            else:
+                item.setCheckState(Qt.Unchecked)
+
+    def do_set_default(self):
+        checked_items = []
+        all_items = self.field_list.findItems('', Qt.MatchRegularExpression)
+        for item in all_items:
+            if ((not item.isHidden()) and (item.checkState() == Qt.Checked)):
+                checked_items.append(item.text())
+        prefs['export_selected'] = checked_items
 
     def accept(self):
         print("ACCEPT!")
@@ -125,6 +184,8 @@ class ImportDialog(QDialog):
     def is_checked(self, label):
         found = self.field_list.findItems(label, Qt.MatchExactly)
         if (len(found) != 1):
+            return False
+        if found[0].isHidden():
             return False
         #print(f"{label} Found: {type(found)} {len(found)}")
         return found[0].checkState() == Qt.Checked
@@ -206,10 +267,10 @@ class ImportDialog(QDialog):
                 if (update_all or mi.is_null(column)):
                     mi.set(column, audio_tags['bitrate'])
             if (self.is_checked("sample_rate")):
-                column = prefs['sample']['column']
+                column = prefs['sample_rate']['column']
                 if (update_all or mi.is_null(column)):
                     mi.set(column, audio_tags['sample_rate'])
-            if (self.is_checked("total_size")):
+            if (self.is_checked("size")):
                 column = prefs['size']['column']
                 if (update_all or mi.is_null(column)):
                     if (prefs['size']['format'] == 'float'):
@@ -225,7 +286,7 @@ class ImportDialog(QDialog):
                 if (update_all or mi.is_null(column)):
                     mi.set(column, audio_tags['mode'])
             if (self.is_checked("num_files")):
-                column = prefs['numfiles']['column']
+                column = prefs['num_files']['column']
                 if (update_all or mi.is_null(column)):
                     mi.set(column, audio_tags['num_files'])
 
@@ -259,8 +320,12 @@ class ImportDialog(QDialog):
         
         #self.footest()
 
-
-
+    def apply_settings(self):
+        all_items = self.field_list.findItems('', Qt.MatchRegularExpression)        
+        for field in all_items:
+            if field.text() in ("cover", "title", "author"): # Never hidden
+                continue
+            field.setHidden(not prefs[field.text()]['enabled'])
 
     def footest(self):        
         column_types = ['float','int']

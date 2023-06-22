@@ -309,14 +309,14 @@ class InterfacePlugin(InterfaceAction):
     def validate_columns(self):
         from calibre.gui2 import error_dialog
         from calibre_plugins.AudioM3U.config import prefs
-        columns = ["narrator", "duration", "size", "sample", "bitrate", "mode", "type", "numfiles", "genre"]
+        columns = ["narrator", "duration", "size", "sample_rate", "bitrate", "mode", "type", "num_files", "genre"]
         custom_columns = self.gui.library_view.model().custom_columns
         #print(f"custom_columns: {custom_columns}")
         for column in columns:
             if prefs[column]['enabled']:
                 colname = prefs[column]['column']
                 coltype = prefs[column]['format']
-                print(f"Column type for '{column},' name: {colname}, type: {custom_columns[colname]['datatype']}")
+                #print(f"Column type for '{column},' name: {colname}, type: {custom_columns[colname]['datatype']}")
                 if not prefs[column]['column'] in custom_columns:
                     error_dialog(self.gui, 'Invalid custom column',
                                  f"Custom column configured for '{column}' does not exist: '{colname}'", show=True)
@@ -335,4 +335,8 @@ class InterfacePlugin(InterfaceAction):
         # In an actual non trivial plugin, you would probably need to
         # do something based on the settings in prefs
         print("---> apply_settings()")
+        if (self.min_dlg != None):
+            self.min_dlg.apply_settings()
+        if (self.mout_dlg != None):
+            self.mout_dlg.apply_settings()
         prefs

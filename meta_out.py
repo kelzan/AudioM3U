@@ -12,7 +12,8 @@ from calibre_plugins.AudioM3U.progress import ProgressBarWindow
 
 from polyglot.builtins import cmp, iteritems, itervalues, string_or_bytes
 
-from qt.core import QDialog, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QDialogButtonBox
+from qt.core import (QDialog, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QDialogButtonBox,
+                     QGridLayout, QPushButton)
 from PyQt5.QtCore import (Qt, QCoreApplication, QMetaObject)
 
 from calibre_plugins.AudioM3U.config import prefs
@@ -68,6 +69,29 @@ class ExportDialog(QDialog):
             self.field_list.addItem(list_item)
         self.verticalLayout.addWidget(self.field_list)
 
+        # Selection Button Grid
+        self.gridLayout = QGridLayout()
+        self.gridLayout.setContentsMargins(-1, 0, -1, -1)
+        self.gridLayout.setObjectName("gridLayout")
+        self.nonePushButton = QPushButton(self)
+        self.nonePushButton.setObjectName("nonePushButton")
+        self.gridLayout.addWidget(self.nonePushButton, 0, 1, 1, 1)
+        self.allPushButton = QPushButton(self)
+        self.allPushButton.setObjectName("allPushButton")
+        self.gridLayout.addWidget(self.allPushButton, 0, 0, 1, 1)
+        self.defaultPushButton = QPushButton(self)
+        self.defaultPushButton.setObjectName("defaultPushButton")
+        self.gridLayout.addWidget(self.defaultPushButton, 1, 0, 1, 1)
+        self.setDefaultPushButton = QPushButton(self)
+        self.setDefaultPushButton.setObjectName("setDefaultPushButton")
+        self.gridLayout.addWidget(self.setDefaultPushButton, 1, 1, 1, 1)
+        self.verticalLayout.addLayout(self.gridLayout)
+
+        self.nonePushButton.setText("Select None")
+        self.allPushButton.setText("Select All")
+        self.defaultPushButton.setText("Select Default")
+        self.setDefaultPushButton.setText("Set as Default")
+
         # Dialog Button Box
         self.buttonBox = QDialogButtonBox(self)
         self.buttonBox.setOrientation(Qt.Horizontal)
@@ -84,14 +108,50 @@ class ExportDialog(QDialog):
 
         self.setLayout(self.verticalLayout)
 
-         # Progress Bar Window
+        # Hide unenabled fields
+        self.apply_settings()
+
+        # Progress Bar Window
         self.progress_window = ProgressBarWindow()
         self.progress_window.cancel_button.clicked.connect(self.set_stop)
         self.stop_op = False
-        
+
+        # Connect button actions
+        self.nonePushButton.clicked.connect(self.do_sel_none)
+        self.allPushButton.clicked.connect(self.do_sel_all)
+        self.defaultPushButton.clicked.connect(self.do_sel_default)
+        self.setDefaultPushButton.clicked.connect(self.do_set_default)
+
     def set_stop(self):
         self.stop_op = True
        
+    def do_sel_none(self):
+        all_items = self.field_list.findItems('', Qt.MatchRegularExpression)
+        for item in all_items:
+            item.setCheckState(Qt.Unchecked)
+
+    def do_sel_all(self):
+        all_items = self.field_list.findItems('', Qt.MatchRegularExpression)
+        for item in all_items:
+            item.setCheckState(Qt.Checked)
+
+    def do_sel_default(self):
+        checked_items = prefs['import_selected']
+        all_items = self.field_list.findItems('', Qt.MatchRegularExpression)
+        for item in all_items:
+            if item.text() in checked_items:
+                item.setCheckState(Qt.Checked)
+            else:
+                item.setCheckState(Qt.Unchecked)
+
+    def do_set_default(self):
+        checked_items = []
+        all_items = self.field_list.findItems('', Qt.MatchRegularExpression)
+        for item in all_items:
+            if ((not item.isHidden()) and (item.checkState() == Qt.Checked)):
+                checked_items.append(item.text())
+        prefs['import_selected'] = checked_items
+
     def accept(self):
         print("ACCEPT!")
         self.export_metadata()
@@ -106,6 +166,8 @@ class ExportDialog(QDialog):
     def is_checked(self, label):
         found = self.field_list.findItems(label, Qt.MatchExactly)
         if (len(found) != 1):
+            return False
+        if found[0].isHidden():
             return False
         #print(f"{label} Found: {type(found)} {len(found)}")
         return found[0].checkState() == Qt.Checked
@@ -156,9 +218,15 @@ class ExportDialog(QDialog):
                     export_meta["author"] = " & ".join(mi.get("authors"))
                 if ((field == "title") and (not mi.is_null("title"))):
                     export_meta["title"] = mi.get("title")
-                if ((field == "narrator") and (not mi.is_null("#narrator"))):
-                    print(f"Getting narrator: {mi.get('#narrator')}")
-                    export_meta["narrator"] = " & ".join(mi.get("#narrator"))
+                if (field == "narrator"):
+                    column = prefs['narrator']['column']
+                    if not mi.is_null(column):
+                        #print(f"Getting narrator {column}: {mi.get(column)} type {type(mi.get(column))}")
+                        # Support either ampersand separated names (list), or straight text field for narrator
+                        if type(mi.get(column)) == list:
+                            export_meta["narrator"] = " & ".join(mi.get(column))
+                        elif type(mi.get(column)) == str:
+                            export_meta["narrator"] = mi.get(column)
                 if ((field == "cover") and (not mi.is_null("cover_data"))):
                     export_meta["cover"] = mi.get("cover_data")
             #print(f"export_meta: {export_meta}")
@@ -173,6 +241,13 @@ class ExportDialog(QDialog):
         info_dialog(self, 'Updated audio files',
                 f'Exported the metadata to the audio files for {i} of {len(ids)} book(s)',
                 show=True)
+
+    def apply_settings(self):
+        all_items = self.field_list.findItems('', Qt.MatchRegularExpression)        
+        for field in all_items:
+            if field.text() in ("cover", "title", "author"): # Never hidden
+                continue
+            field.setHidden(not prefs[field.text()]['enabled'])
 
     def config(self):
         self.do_user_config(parent=self)

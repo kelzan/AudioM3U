@@ -27,9 +27,9 @@ prefs.defaults['duration'] = { 'enabled' : False,
 prefs.defaults['size'] = { 'enabled' : False,
                            'column' : '',
                            'format' : 'float' }
-prefs.defaults['sample'] = { 'enabled' : False,
-                             'column' : '',
-                             'format' : 'int' }
+prefs.defaults['sample_rate'] = { 'enabled' : False,
+                                  'column' : '',
+                                  'format' : 'int' }
 prefs.defaults['bitrate'] = { 'enabled' : False,
                               'column' : '',
                               'format' : 'int' }
@@ -39,13 +39,15 @@ prefs.defaults['mode'] = { 'enabled' : False,
 prefs.defaults['type'] = { 'enabled' : False,
                            'column' : '',
                            'format' : 'text' }
-prefs.defaults['numfiles'] = { 'enabled' : False,
-                               'column' : '',
-                               'format' : 'int' }
+prefs.defaults['num_files'] = { 'enabled' : False,
+                                'column' : '',
+                                'format' : 'int' }
 prefs.defaults['genre'] = { 'enabled' : False,
                             'column' : '',
                             'format' : 'text',
                             'trim' : True }
+prefs.defaults['export_selected'] = []
+prefs.defaults['import_selected'] = []
 
 class ConfigWidget(QWidget):
 
@@ -343,8 +345,8 @@ class ConfigWidget(QWidget):
         self.megsRadioButton.setChecked(prefs['size']['format'] == 'float')
         self.bytesRadioButton.setChecked(prefs['size']['format'] == 'int')
 
-        self.sampleGroupBox.setChecked(prefs['sample']['enabled'])
-        self.sampleLineEdit.setText(prefs['sample']['column'])
+        self.sampleGroupBox.setChecked(prefs['sample_rate']['enabled'])
+        self.sampleLineEdit.setText(prefs['sample_rate']['column'])
 
         self.bitrateGroupBox.setChecked(prefs['bitrate']['enabled'])
         self.bitrateLineEdit.setText(prefs['bitrate']['column'])
@@ -355,27 +357,18 @@ class ConfigWidget(QWidget):
         self.typeGroupBox.setChecked(prefs['type']['enabled'])
         self.typeLineEdit.setText(prefs['type']['column'])
 
-        self.numfilesGroupBox.setChecked(prefs['numfiles']['enabled'])
-        self.numfilesLineEdit.setText(prefs['numfiles']['column'])
+        self.numfilesGroupBox.setChecked(prefs['num_files']['enabled'])
+        self.numfilesLineEdit.setText(prefs['num_files']['column'])
 
         self.genreGroupBox.setChecked(prefs['genre']['enabled'])
         self.genreLineEdit.setText(prefs['genre']['column'])
         self.trimCheckBox.setChecked(prefs['genre']['trim'])
 
     def save_settings(self):
-        #prefs['hello_world_msg'] = self.msg.text()
-        print("save settings")
-        #prefs['xyzzy'] = "Magic stuff"
-        #prefs['mymap'] = { "one" : 1, "two" : 2, "three" : 3}
-        #prefs['hero'] = 'batman'
-
         prefs['duration'] = { 'enabled' : self.durationGroupBox.isChecked(),
                               'column' : self.durationLineEdit.text(),
                               'format' : 'text' if self.hmmssRadioButton.isChecked() else 'int' }
-        #print(f"duration: {prefs['duration']['column']}")
-        #p = prefs['duration']
-        #print(f"duration: {p['column']}")
-        
+
         prefs['narrator'] = { 'enabled' : self.narratorGroupBox.isChecked(),
                               'column' : self.narratorLineEdit.text(),
                               'format' : 'text' }
@@ -384,9 +377,9 @@ class ConfigWidget(QWidget):
                           'column' : self.sizeLineEdit.text(),
                           'format' : 'float' if self.megsRadioButton.isChecked() else 'int' }
  
-        prefs['sample'] = { 'enabled' : self.sampleGroupBox.isChecked(),
-                            'column' : self.sampleLineEdit.text(),
-                            'format' : 'int' }
+        prefs['sample_rate'] = { 'enabled' : self.sampleGroupBox.isChecked(),
+                                 'column' : self.sampleLineEdit.text(),
+                                 'format' : 'int' }
        
         prefs['bitrate'] = { 'enabled' : self.bitrateGroupBox.isChecked(),
                              'column' : self.bitrateLineEdit.text(),
@@ -400,21 +393,12 @@ class ConfigWidget(QWidget):
                           'column' : self.typeLineEdit.text(),
                           'format' : 'text'  }
         
-        prefs['numfiles'] = { 'enabled' : self.numfilesGroupBox.isChecked(),
-                              'column' : self.numfilesLineEdit.text(),
-                              'format' : 'int' }
+        prefs['num_files'] = { 'enabled' : self.numfilesGroupBox.isChecked(),
+                               'column' : self.numfilesLineEdit.text(),
+                               'format' : 'int' }
         
         prefs['genre'] = { 'enabled' : self.genreGroupBox.isChecked(),
                            'column' : self.genreLineEdit.text(),
                            'format' : 'text',
                            'trim'   : self.trimCheckBox.isChecked() }       
-
-        #print(f"{'text' if self.hmmssRadioButton.isChecked() else 'int'} {self.hmmssRadioButton.isChecked()}")
-        #prefs['duration']['enabled'] = self.durationGroupBox.isChecked()
-        #prefs['duration']['column']  = self.durationLineEdit.text()
-        #if (self.megsRadioButton.isDown()):
-        #    p['format'] = 'text'
-        #else:
-        #    p['format'] = 'int'
-        #prefs['duration'] = p
 
