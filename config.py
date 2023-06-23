@@ -1,6 +1,6 @@
 
 __license__   = 'GPL v3'
-__copyright__ = '2023, Kelly Larson <kelly@kellylarson.com>'
+__copyright__ = '2023, Kelly Larson'
 
 from qt.core import (QWidget, QHBoxLayout, QVBoxLayout, QLabel, QLineEdit, QMetaObject, 
                      QGroupBox, QGridLayout, QRadioButton, QSpacerItem, QSizePolicy, QCheckBox,
@@ -16,8 +16,6 @@ from calibre.utils.config import JSONConfig
 prefs = JSONConfig('plugins/audio_m3u')
 
 # Set defaults
-#prefs.defaults['hello_world_msg'] = 'Hello, World!'
-#prefs.defaults['foobar'] = 'This is a foobar message!'
 prefs.defaults['narrator'] = { 'enabled' : False,
                                'column' : '',
                                 'format' : 'text' }
@@ -45,6 +43,7 @@ prefs.defaults['num_files'] = { 'enabled' : False,
 prefs.defaults['genre'] = { 'enabled' : False,
                             'column' : '',
                             'format' : 'text',
+                            'expand' : True,
                             'trim' : True }
 prefs.defaults['export_selected'] = []
 prefs.defaults['import_selected'] = []
@@ -53,19 +52,6 @@ class ConfigWidget(QWidget):
 
     def __init__(self):
         QWidget.__init__(self)
-        #self.plugin_action = plugin_action
-        # self.l = QHBoxLayout()
-        # self.setLayout(self.l)
-
-        # self.label = QLabel('Hello world &message:')
-        # self.l.addWidget(self.label)
-
-        # self.msg = QLineEdit(self)
-        # self.msg.setText(prefs['hello_world_msg'])
-        # self.l.addWidget(self.msg)
-        # self.label.setBuddy(self.msg)
-        #print(f"foobar: {prefs['foobar']}")
-
         self.initializeUI()
 
     def initializeUI(self):
@@ -240,8 +226,10 @@ class ConfigWidget(QWidget):
         self.gridLayout.addWidget(self.genreLineEdit, 0, 1, 1, 1)
         self.genreHorizontalLayout = QHBoxLayout()
         self.genreHorizontalLayout.setObjectName("genreHorizontalLayout")
+        self.expandCheckBox = QCheckBox(self.genreGroupBox)
+        self.expandCheckBox.setObjectName("expandCheckBox")
+        self.genreHorizontalLayout.addWidget(self.expandCheckBox)
         self.trimCheckBox = QCheckBox(self.genreGroupBox)
-        self.trimCheckBox.setChecked(True)
         self.trimCheckBox.setObjectName("trimCheckBox")
         self.genreHorizontalLayout.addWidget(self.trimCheckBox)
         spacerItem2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
@@ -328,7 +316,8 @@ class ConfigWidget(QWidget):
         self.genreGroupBox.setTitle(_translate("Dialog", "Genre"))
         self.genreLabel.setText(_translate("Dialog", "Custom Column:"))
         self.genreLineEdit.setPlaceholderText(_translate("Dialog", "ex. \'#genre\' Must be text type"))
-        self.trimCheckBox.setText(_translate("Dialog", "Trim on Export"))
+        self.expandCheckBox.setText(_translate("Dialog", "Expand Subgroup on Import"))
+        self.trimCheckBox.setText(_translate("Dialog", "Trim to Subgroup on Export"))
 
     def configure_settings(self):
 
@@ -362,6 +351,7 @@ class ConfigWidget(QWidget):
 
         self.genreGroupBox.setChecked(prefs['genre']['enabled'])
         self.genreLineEdit.setText(prefs['genre']['column'])
+        self.expandCheckBox.setChecked(prefs['genre']['expand'])
         self.trimCheckBox.setChecked(prefs['genre']['trim'])
 
     def save_settings(self):
@@ -400,5 +390,6 @@ class ConfigWidget(QWidget):
         prefs['genre'] = { 'enabled' : self.genreGroupBox.isChecked(),
                            'column' : self.genreLineEdit.text(),
                            'format' : 'text',
+                           'expand' : self.expandCheckBox.isChecked(),
                            'trim'   : self.trimCheckBox.isChecked() }       
 

@@ -1,17 +1,13 @@
-#!/usr/bin/env python
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
-
 
 __license__   = 'GPL v3'
-__copyright__ = '2023, Kelly Larson <kelly@kellylarson.com>'
-__docformat__ = 'restructuredtext en'
+__copyright__ = '2023, Kelly Larson'
 
 import os
 import io
 
 # The class that all interface action plugins must inherit from
 from calibre.gui2.actions import InterfaceAction
-from calibre_plugins.AudioM3U.main import DemoDialog
+#from calibre_plugins.AudioM3U.main import DemoDialog
 from calibre_plugins.AudioM3U.meta_in import ImportDialog
 from calibre_plugins.AudioM3U.meta_out import ExportDialog
 from calibre_plugins.AudioM3U.inspect import InspectDialog
@@ -233,6 +229,9 @@ class InterfacePlugin(InterfaceAction):
 
     def do_help(self):
         print("do_help")
+        db = self.gui.current_db.new_api
+        genremap = db.get_id_map('#genre').values()
+        print(f"genremap: {genremap}")
 
 
     def show_dialog(self):

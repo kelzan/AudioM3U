@@ -1,6 +1,5 @@
 __license__   = 'GPL v3'
-__copyright__ = '2023, Kelly Larson <kelly@kellylarson.com>'
-__docformat__ = 'restructuredtext en'
+__copyright__ = '2023, Kelly Larson'
 
 import sys
 import os
@@ -29,7 +28,8 @@ class ImportDialog(QDialog):
         self.gui = gui
         self.do_user_config = do_user_config
 
-        self.fields = ["cover", "title", "author", "narrator", "duration", "size", "sample_rate", "bitrate", "mode", "type", "num_files"]
+        self.fields = ["cover", "title", "author", "narrator", "duration", "size", "sample_rate", "bitrate", "mode", "type", "num_files", "genre"]
+        self.genre_fields = []
 
         # The current database shown in the GUI
         # db is an instance of the class LibraryDatabase from db/legacy.py
@@ -190,6 +190,24 @@ class ImportDialog(QDialog):
         #print(f"{label} Found: {type(found)} {len(found)}")
         return found[0].checkState() == Qt.Checked
     
+    def expand_genre(self, input_genre):
+        genres = input_genre.split(", ")
+        result = []
+        for genre in genres:
+            if genre in self.genre_fields:
+                result.append(genre)
+                continue
+            found = False
+            for full_genre in self.genre_fields:
+                if full_genre.endswith(genre):
+                    result.append(full_genre)
+                    found = True
+                    break
+            if not found:
+                result.append(genre)
+#        print(f"Expanded {', '.join(result)}")
+        return ", ".join(result)
+        
     def update_metadata(self):
         '''
         Set the metadata in the files in the selected book's record to
@@ -236,9 +254,11 @@ class ImportDialog(QDialog):
             fmts = db.formats(book_id)
             if not fmts:
                 continue
-            #print("audio_tags: ",audio_tags)
-            #non_none_fields = mi.all_non_none_fields()
-            #print("non none:",non_none_fields)
+
+            # Load array with genre fields if we're going to be expanding subcategories
+            if (self.is_checked("genre") and prefs['genre']['expand']):
+                self.genre_fields = db.get_id_map(prefs['genre']['column']).values()
+
             # Now determine which fields, based on config and options, need to be updated
             update_all = not self.only_blank_cb.isChecked()
 
@@ -255,6 +275,14 @@ class ImportDialog(QDialog):
                 if (update_all or mi.is_null(column)):
                     if "narrator" in audio_tags:
                         mi.set(column, audio_tags['narrator'])
+            if (self.is_checked("genre")):
+                column = prefs['genre']['column']
+                if (update_all or mi.is_null(column)):
+                    if "genre" in audio_tags:
+                        if prefs['genre']['expand']:
+                            mi.set(column, self.expand_genre(audio_tags['genre']))
+                        else:
+                            mi.set(column, audio_tags['genre'])
             if (self.is_checked("duration")):
                 column = prefs['duration']['column']
                 if (update_all or mi.is_null(column)):
@@ -295,17 +323,9 @@ class ImportDialog(QDialog):
                     cover = get_cover(path)
                     mi.set("cover_data", cover) # This is a ('type', 'data') tuple
 
-            #print(f"current genre: {mi.get('#genre')} {type(mi.get('#genre'))}")
-            #mi.set("#genre", "foo.genre, bar.genre")
-            
+            # Update the metadata
             self.db.set_metadata(book_id, mi)
-
             self.gui.library_view.model().refresh_ids([book_id])
-            #print(f"Genre for {book_id}: {db.field_for('#genre',book_id)} {type(db.field_for('#genre',book_id))}")
-            #print(f"type: {type(self.gui.book_details)}")
-            #self.gui.book_details.show_data(mi)
-            #self.gui.book_details.reset_info()
-            #self.gui.book_details.update_layout()
 
         # Now set the current index back to it's current position again to trigger a window refresh
         current_idx = self.gui.library_view.currentIndex()

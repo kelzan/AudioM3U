@@ -1,6 +1,5 @@
 __license__   = 'GPL v3'
-__copyright__ = '2023, Kelly Larson <kelly@kellylarson.com>'
-__docformat__ = 'restructuredtext en'
+__copyright__ = '2023, Kelly Larson'
 
 import sys
 import os

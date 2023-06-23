@@ -1,13 +1,16 @@
+__license__   = 'GPL v3'
+__copyright__ = '2023, Kelly Larson'
+
 import os
 import sys
 
-sys.path.append("./")
+#sys.path.append("./")
 # from calibre_plugins.AudioM3U.unzip import UNZIP_PATH
 # from calibre.constants import plugins, iswindows, islinux, isosx
 
 # from calibre_plugins.AudioM3U.unzip import install_libs
 # sys.path.append(UNZIP_PATH)
-print("m3u_util path",sys.path)
+#print("m3u_util path",sys.path)
 import calibre_plugins.AudioM3U.mutagen
 
 from calibre_plugins.AudioM3U.mutagen.mp4 import MP4, MP4Cover
@@ -36,6 +39,8 @@ def get_metadata(file_path):
             tagvals["title"] = audio["TALB"][0]
         if "TCOM" in audio:
             tagvals["narrator"] = audio["TCOM"][0]
+        if "TCON" in audio:
+            tagvals["genre"] = audio["TCON"][0]
         tagvals["sample_rate"] = audio.info.sample_rate
         tagvals["bitrate"] = audio.info.bitrate // 1000  # Bitrate in kbps
         if (audio.info.mode == 0):
@@ -60,6 +65,8 @@ def get_metadata(file_path):
             tagvals["title"] = audio["\xa9alb"][0]
         if "\xa9wrt" in audio:
             tagvals["narrator"] = audio["\xa9wrt"][0]
+        if "\xa9gen" in audio:
+            tagvals["genre"] = audio["\xa9gen"][0]
         tagvals["sample_rate"] = audio.info.sample_rate
         tagvals["bitrate"] = audio.info.bitrate // 1000  # Bitrate in kbps
         if (audio.info.channels == 1):
@@ -126,6 +133,8 @@ def print_metadata():
         print(f"Title: {tagvals['title']}")
     if "narrator" in tagvals:
         print(f"Narrator: {tagvals['narrator']}")
+    if "genre" in tagvals:
+        print(f"Genre: {tagvals['genre']}")
     print(f"Bitrate: {tagvals['bitrate']} kbps")
     print(f"Sample Rate: {tagvals['sample_rate']}")
     print(f"Mode: {tagvals['mode']}")
@@ -225,7 +234,7 @@ def get_cover(playlist_path):
 
 def export_tags(playlist_path, update_fields):
     keys = list(update_fields.keys())
-    print(f"keys: {keys}")
+    #print(f"keys: {keys}")
     with open(playlist_path, "r") as playlist_file:
         for line in playlist_file:
             line = line.strip()
@@ -238,6 +247,8 @@ def export_tags(playlist_path, update_fields):
                     audio["album"] = update_fields["title"]
                 if "narrator" in keys:
                     audio["composer"] = update_fields["narrator"]
+                if "genre" in keys:
+                    audio["genre"] = update_fields["genre"]
                 #if "cover" in keys:
                 #    audio["covr"] = update_fields["cover"]
                 #audio.info.pprint()

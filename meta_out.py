@@ -1,6 +1,5 @@
 __license__   = 'GPL v3'
-__copyright__ = '2023, Kelly Larson <kelly@kellylarson.com>'
-__docformat__ = 'restructuredtext en'
+__copyright__ = '2023, Kelly Larson'
 
 import sys
 import os
@@ -26,7 +25,7 @@ class ExportDialog(QDialog):
         self.gui = gui
         self.do_user_config = do_user_config
 
-        self.fields = ["cover", "title", "author", "narrator"]
+        self.fields = ["cover", "title", "author", "genre", "narrator"]
 
         # The current database shown in the GUI
         # db is an instance of the class LibraryDatabase from db/legacy.py
@@ -171,7 +170,19 @@ class ExportDialog(QDialog):
             return False
         #print(f"{label} Found: {type(found)} {len(found)}")
         return found[0].checkState() == Qt.Checked
-    
+
+    def trim_genre(self, input_genre):
+        if isinstance(input_genre, str):  # Handle a single string
+            last_dot_index = input_genre.rfind('.')
+            if last_dot_index != -1:
+                return input_genre[last_dot_index + 1:]
+            else:
+                return input_genre
+        elif isinstance(input_genre, list):  # Handle a list of strings
+            return [self.trim_genre(string) for string in input_genre]
+        else:
+            raise TypeError("Input genre must be a string or a list of strings.")
+        
     def export_metadata(self):
         '''
         Set the metadata in the files in the selected book's record to
@@ -212,7 +223,7 @@ class ExportDialog(QDialog):
             export_fields = list(filter(lambda x: (self.is_checked(x)),self.fields))
 
             export_meta = {}
-            print(f"export_fields: {export_fields}")
+            #print(f"export_fields: {export_fields}")
             for field in export_fields:
                 if ((field == "author") and (not mi.is_null("authors"))):
                     export_meta["author"] = " & ".join(mi.get("authors"))
@@ -227,6 +238,20 @@ class ExportDialog(QDialog):
                             export_meta["narrator"] = " & ".join(mi.get(column))
                         elif type(mi.get(column)) == str:
                             export_meta["narrator"] = mi.get(column)
+                if (field == "genre"):
+                    column = prefs['genre']['column']
+                    if not mi.is_null(column):
+                        # Support either multiple genres (list), or straight text field for genre
+                        if (prefs['genre']['trim']):
+                            gen_export = self.trim_genre(mi.get(column))
+                        else:
+                            gen_export = mi.get(column)
+                        if type(gen_export) == list:
+                            export_meta["genre"] = ", ".join(gen_export)
+                            #print("GENRE LIST")
+                        elif type(gen_export) == str:
+                            export_meta["genre"] = gen_export
+                            #print("GENRE STR")
                 if ((field == "cover") and (not mi.is_null("cover_data"))):
                     export_meta["cover"] = mi.get("cover_data")
             #print(f"export_meta: {export_meta}")
