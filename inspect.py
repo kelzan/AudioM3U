@@ -1,10 +1,6 @@
 __license__   = 'GPL v3'
 __copyright__ = '2023, Kelly Larson'
 
-import sys
-import os
-
-
 from qt.core import (QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPlainTextEdit, QListWidgetItem, QPushButton, 
                      QDialogButtonBox)
 from PyQt5.QtCore import (Qt, QCoreApplication, QMetaObject)

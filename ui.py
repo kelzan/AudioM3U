@@ -1,4 +1,3 @@
-
 __license__   = 'GPL v3'
 __copyright__ = '2023, Kelly Larson'
 
@@ -16,8 +15,10 @@ from calibre_plugins.AudioM3U.validate import ValidateDialog
 from calibre_plugins.AudioM3U.m3u_utils import create_m3u
 from calibre.ebooks.metadata.book.base import Metadata
 
-from calibre.gui2 import error_dialog
-from qt.core import QToolButton, QFileDialog, QWidget, QProgressBar, QPushButton, QApplication
+from calibre.gui2 import error_dialog, open_url
+from qt.core import QToolButton, QFileDialog, QUrl
+
+HELP_URL = 'https://github.com/kelzan/AudioM3U'
 
 class InterfacePlugin(InterfaceAction):
 
@@ -54,23 +55,22 @@ class InterfacePlugin(InterfaceAction):
         # The qaction is automatically created from the action_spec defined
         # above
         self.qaction.setIcon(icons["images/icon.png"])
-        #self.qaction.triggered.connect(self.show_dialog)
         self.qaction.triggered.connect(self.do_import)
 
         m = self.qaction.menu()
-        self.create_menu_action(m, "m3u_import", "Import metadata", icons["images/arrow.png"], 
+        self.create_menu_action(m, "m3u_import", "Import metadata...", icons["images/arrow.png"], 
                                 None, "Import metadata from M3U audio files", self.do_import)    
-        self.create_menu_action(m, "m3u_export", "Export metadata", icons["images/arrow-180.png"], 
+        self.create_menu_action(m, "m3u_export", "Export metadata...", icons["images/arrow-180.png"], 
                                 None, "Export metadata to M3U audio files", self.do_export)
-        self.create_menu_action(m, "m3u_addm3u", "Create/Update M3U for book(s)", icons["images/plus.png"], 
-                                None, "Creates and adds M3U files for existing books", self.do_addm3u)
-        self.create_menu_action(m, "m3u_createm3u", "Create new M3U book", icons["images/disc.png"], 
+        self.create_menu_action(m, "m3u_addm3u", "Create/Update M3U for book(s)...", icons["images/plus.png"], 
+                                None, "Creates or updates M3U files for existing books", self.do_addm3u)
+        self.create_menu_action(m, "m3u_createm3u", "Create new M3U book...", icons["images/disc.png"], 
                                 None, "Creates an M3U file and adds it to library as a new book", self.do_createm3u)
-        self.create_menu_action(m, "m3u_inspectm3u", "Inspect M3U", icons["images/magnifier.png"],
+        self.create_menu_action(m, "m3u_inspectm3u", "Inspect M3U...", icons["images/magnifier.png"],
                                 None, "Inspects contents of M3U files", self.do_inspect)
-        self.create_menu_action(m, "m3u_validate", "Validate M3U", icons["images/tick.png"], 
+        self.create_menu_action(m, "m3u_validate", "Validate M3U...", icons["images/tick.png"], 
                                 None, "Validates M3U audio file paths", self.do_validate)
-        self.create_menu_action(m, "m3u_customize", "Customize", icons["images/checkbox.png"], 
+        self.create_menu_action(m, "m3u_customize", "Customize...", icons["images/checkbox.png"], 
                                 None, "Customize Audio M3U plugin", self.do_customize)
         self.create_menu_action(m, "m3u_help", "Help", icons["images/question.png"], 
                                 None, "Help", self.do_help)
@@ -78,6 +78,7 @@ class InterfacePlugin(InterfaceAction):
         self.min_dlg = None # Placeholder for Metadata Import Dialog
         self.mout_dlg = None # Placeholder for Metadata Export Dialog
         self.validate_dlg = None # Placeholder for Validate Dialog
+        self.inspect_dlg = None # Placeholder for Inspect Dialog
 
 
     def library_changed(self, db):
@@ -88,18 +89,10 @@ class InterfacePlugin(InterfaceAction):
             self.mout_dlg.db = db
         if (self.validate_dlg != None):
             self.validate_dlg.db = db
-
-#    def do_import(self):
-#        print("Do Import")
-
-    # def do_export(self):
-    #     print("Do Export")
+        if (self.inspect_dlg != None):
+            self.inspect_dlg.db = db
 
     def do_addm3u(self):
-        #print("do addm3u")
-        #from calibre.ebooks.metadata.meta import set_metadata
-        #from calibre.gui2 import error_dialog, info_dialog
-
         # Get currently selected books
         rows = self.gui.library_view.selectionModel().selectedRows()
         if not rows or len(rows) == 0:
@@ -182,33 +175,8 @@ class InterfacePlugin(InterfaceAction):
         self.gui.refresh_cover_browser()
         self.gui.tags_view.recount()
 
-    #    bookmap = (md, {'M3U':'C:\Users\kelly\Documents\Source\Andy Weir\Ada Palmer - Seven Surrenders.m3u'})
-        #path_to_file = "C:/Users/kelly/Documents/Source/Andy Weir/Ada Palmer - Seven Surrenders.m3u"
-        #testtext = "Now is the time for all good men, etc."
-        #btext = testtext.encode()
-        #b = bytearray()
-        #b.extend(map(ord,testtext))
-        #bb = bytes(map(ord,m3u_flat))
-
-        #bookmap = [(md, {'M3U' : path_to_file})]
-
-        #self.gui.library_view.model().refresh_ids(one)
-        #self.gui.library_view.model().books_added(1)
-        #self.gui.library_view.model().count_changed()
-        #self.gui.refresh_cover_browser()
-        #self.refresh_gui(1)
-        #db.add_books([path_to_file],[md])
-        #print(f"one {one}, two {two}")
-        #self.gui.current_db.set_marked_ids(one)
-
-        # Tell the GUI to search for all marked records
-        #self.gui.search.setEditText('marked:true')
-        #self.gui.search.do_search()
-
-
-
     def do_validate(self):
-        print("do validate")
+        #print("do validate")
         # self.gui is the main calibre GUI. It acts as the gateway to access
         # all the elements of the calibre user interface, it should also be the
         # parent of the dialog
@@ -224,30 +192,30 @@ class InterfacePlugin(InterfaceAction):
         self.validate_dlg.show()
 
     def do_customize(self):
-        print("do customize")
+        #print("do customize")
         self.interface_action_base_plugin.do_user_config(self.gui)
 
     def do_help(self):
-        print("do_help")
-        db = self.gui.current_db.new_api
-        genremap = db.get_id_map('#genre').values()
-        print(f"genremap: {genremap}")
+        #print("do_help")
+        #db = self.gui.current_db.new_api
+        #genremap = db.get_id_map('#genre').values()
+        #print(f"genremap: {genremap}")
+        open_url(QUrl(HELP_URL))
 
+    # def show_dialog(self):
+    #     # The base plugin object defined in __init__.py
+    #     base_plugin_object = self.interface_action_base_plugin
+    #     # Show the config dialog
+    #     # The config dialog can also be shown from within
+    #     # Preferences->Plugins, which is why the do_user_config
+    #     # method is defined on the base plugin class
+    #     do_user_config = base_plugin_object.do_user_config
 
-    def show_dialog(self):
-        # The base plugin object defined in __init__.py
-        base_plugin_object = self.interface_action_base_plugin
-        # Show the config dialog
-        # The config dialog can also be shown from within
-        # Preferences->Plugins, which is why the do_user_config
-        # method is defined on the base plugin class
-        do_user_config = base_plugin_object.do_user_config
-
-        # self.gui is the main calibre GUI. It acts as the gateway to access
-        # all the elements of the calibre user interface, it should also be the
-        # parent of the dialog
-        d = DemoDialog(self.gui, self.qaction.icon(), do_user_config)
-        d.show()
+    #     # self.gui is the main calibre GUI. It acts as the gateway to access
+    #     # all the elements of the calibre user interface, it should also be the
+    #     # parent of the dialog
+    #     d = DemoDialog(self.gui, self.qaction.icon(), do_user_config)
+    #     d.show()
 
     def do_import(self):
         # The base plugin object defined in __init__.py
@@ -290,20 +258,21 @@ class InterfacePlugin(InterfaceAction):
         self.mout_dlg.show()
 
     def do_inspect(self):
-        # The base plugin object defined in __init__.py
-        base_plugin_object = self.interface_action_base_plugin
-        # Show the config dialog
-        # The config dialog can also be shown from within
-        # Preferences->Plugins, which is why the do_user_config
-        # method is defined on the base plugin class
-        do_user_config = base_plugin_object.do_user_config
+        if (self.inspect_dlg == None):
+            # The base plugin object defined in __init__.py
+            base_plugin_object = self.interface_action_base_plugin
+            # Show the config dialog
+            # The config dialog can also be shown from within
+            # Preferences->Plugins, which is why the do_user_config
+            # method is defined on the base plugin class
+            do_user_config = base_plugin_object.do_user_config
 
-        # self.gui is the main calibre GUI. It acts as the gateway to access
-        # all the elements of the calibre user interface, it should also be the
-        # parent of the dialog
-        inspect_dlg = InspectDialog(self.gui, self.qaction.icon(), do_user_config)
-        if (inspect_dlg.init_data()):
-            inspect_dlg.show()
+            # self.gui is the main calibre GUI. It acts as the gateway to access
+            # all the elements of the calibre user interface, it should also be the
+            # parent of the dialog
+            self.inspect_dlg = InspectDialog(self.gui, self.qaction.icon(), do_user_config)
+        if (self.inspect_dlg.init_data()):
+            self.inspect_dlg.show()
 
     def validate_columns(self):
         from calibre.gui2 import error_dialog
@@ -333,7 +302,7 @@ class InterfacePlugin(InterfaceAction):
         from calibre_plugins.AudioM3U.config import prefs
         # In an actual non trivial plugin, you would probably need to
         # do something based on the settings in prefs
-        print("---> apply_settings()")
+        #print("---> apply_settings()")
         if (self.min_dlg != None):
             self.min_dlg.apply_settings()
         if (self.mout_dlg != None):

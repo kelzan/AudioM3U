@@ -1,4 +1,3 @@
-
 __license__   = 'GPL v3'
 __copyright__ = '2023, Kelly Larson'
 

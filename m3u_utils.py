@@ -2,16 +2,6 @@ __license__   = 'GPL v3'
 __copyright__ = '2023, Kelly Larson'
 
 import os
-import sys
-
-#sys.path.append("./")
-# from calibre_plugins.AudioM3U.unzip import UNZIP_PATH
-# from calibre.constants import plugins, iswindows, islinux, isosx
-
-# from calibre_plugins.AudioM3U.unzip import install_libs
-# sys.path.append(UNZIP_PATH)
-#print("m3u_util path",sys.path)
-import calibre_plugins.AudioM3U.mutagen
 
 from calibre_plugins.AudioM3U.mutagen.mp4 import MP4, MP4Cover
 from calibre_plugins.AudioM3U.mutagen.mp4 import AtomDataType
@@ -145,7 +135,7 @@ def print_metadata():
     print("Total Size: {:.1f}M".format(tagvals['size'] / (1024*1024)))
     #print("Total Size: {:.1f}M".format(tagvals['size']))
 
-def get_tags(playlist_path):
+def get_tags(audio_files):
     """
     Analyzes a .m3u playlist and prints artist name, album name, bitrate,
     total running length, and saves the cover artwork to a file.
@@ -154,19 +144,15 @@ def get_tags(playlist_path):
     global duration
     tagvals = {}
     duration = 0.0
-    with open(playlist_path, "r") as playlist_file:
-        lines = playlist_file.readlines()
 
-        get_metadata(lines[0].strip())
-        for line in lines:
-            tally_metadata(line.strip())
-        tagvals["duration"] += int(duration+.5) # Round floating point to integer
-        #print(f"size was {tagvals['size']}")
-        #tagvals["size"] = tagvals["size"] / (1024 * 1024) # Bytes to Megs
-        #print(f"size now: {tagvals['size']}")
-        print_metadata()
-        #extract_artwork(lines[0].strip())
-    #print("returning tagvals: ",tagvals)
+    get_metadata(audio_files[0])
+    for file in audio_files:
+        tally_metadata(file)
+    tagvals["duration"] += int(duration+.5) # Round floating point tally to integer seconds
+
+    # Print Tag information for debug
+    print_metadata()
+
     return tagvals
 
 def set_cover(file_path, cover_info):
@@ -198,13 +184,13 @@ def set_cover(file_path, cover_info):
 
 
 
-def get_cover(playlist_path):
+def get_cover(file_path):
     """
     Save cover artwork to a file (if available)
     """
-    with open(playlist_path, "r") as playlist_file:
-        lines = playlist_file.readlines()
-        file_path = lines[0].strip()
+    # with open(playlist_path, "r") as playlist_file:
+    #     lines = playlist_file.readlines()
+    #     file_path = lines[0].strip()
 
     audio = File(file_path)
     cover_art = None
@@ -232,30 +218,27 @@ def get_cover(playlist_path):
     print(f"mime: {mime}")       
     return ( (mime, cover_art) )
 
-def export_tags(playlist_path, update_fields):
+def export_tags(audio_files, update_fields):
     keys = list(update_fields.keys())
     #print(f"keys: {keys}")
-    with open(playlist_path, "r") as playlist_file:
-        for line in playlist_file:
-            line = line.strip()
-            if line and not line.startswith('#'):
-                audio = File(line, easy=True)
-        #        audio.info.pprint()
-                if "author" in keys:
-                    audio["artist"] = update_fields["author"]
-                if "title" in keys:
-                    audio["album"] = update_fields["title"]
-                if "narrator" in keys:
-                    audio["composer"] = update_fields["narrator"]
-                if "genre" in keys:
-                    audio["genre"] = update_fields["genre"]
-                #if "cover" in keys:
-                #    audio["covr"] = update_fields["cover"]
-                #audio.info.pprint()
-                #print("SAVING!")
-                audio.save()
-                if "cover" in keys:
-                    set_cover(line, update_fields["cover"])
+    for line in audio_files:
+        audio = File(line, easy=True)
+#        audio.info.pprint()
+        if "author" in keys:
+            audio["artist"] = update_fields["author"]
+        if "title" in keys:
+            audio["album"] = update_fields["title"]
+        if "narrator" in keys:
+            audio["composer"] = update_fields["narrator"]
+        if "genre" in keys:
+            audio["genre"] = update_fields["genre"]
+        #if "cover" in keys:
+        #    audio["covr"] = update_fields["cover"]
+        #audio.info.pprint()
+        #print("SAVING!")
+        audio.save()
+        if "cover" in keys:
+            set_cover(line, update_fields["cover"])
 
 def create_m3u(book_directory):
     # Retrieve all audio files in the book directory

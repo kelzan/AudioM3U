@@ -1,9 +1,7 @@
 __license__   = 'GPL v3'
 __copyright__ = '2023, Kelly Larson'
 
-import sys
 import os
-
 
 from qt.core import (QDialog, QVBoxLayout, QHBoxLayout, QGroupBox, QPlainTextEdit, QCheckBox, QPushButton, 
                      QSpacerItem, QSizePolicy, QRadioButton)
@@ -186,7 +184,7 @@ class ValidateDialog(QDialog):
             if (self.stop_op): # Did we press 'cancel' from the progress bar?
                 break
             
-            book_dups = set(())
+            #book_dups = set(())
             last_dup_id = 0
             # Get M3U data for book_id, convert to list of strings
             book_data = db.format(book_id, "M3U")

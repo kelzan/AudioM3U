@@ -1,9 +1,6 @@
 __license__   = 'GPL v3'
 __copyright__ = '2023, Kelly Larson'
 
-import sys
-import os
-
 # Import m3u handling utilities
 from calibre_plugins.AudioM3U.m3u_utils import get_tags
 from calibre_plugins.AudioM3U.m3u_utils import get_cover
@@ -169,7 +166,7 @@ class ImportDialog(QDialog):
         prefs['export_selected'] = checked_items
 
     def accept(self):
-        print("ACCEPT!")
+        #print("ACCEPT!")
         self.update_metadata()
         #self.setWindowTitle('Whassup!')
         super().accept()
@@ -187,7 +184,6 @@ class ImportDialog(QDialog):
             return False
         if found[0].isHidden():
             return False
-        #print(f"{label} Found: {type(found)} {len(found)}")
         return found[0].checkState() == Qt.Checked
     
     def expand_genre(self, input_genre):
@@ -205,8 +201,15 @@ class ImportDialog(QDialog):
                     break
             if not found:
                 result.append(genre)
-#        print(f"Expanded {', '.join(result)}")
         return ", ".join(result)
+    
+    def get_audio_paths(self, book_id):
+        db = self.db.new_api
+        book_data = db.format(book_id, "M3U")
+        m3u_text = book_data.decode("utf-8")
+        lines = m3u_text.splitlines()
+        lines = [line for line in lines if ((line != "") and (line[0] != '#'))]
+        return lines
         
     def update_metadata(self):
         '''
@@ -216,8 +219,6 @@ class ImportDialog(QDialog):
         from calibre.ebooks.metadata.meta import set_metadata
         from calibre.gui2 import error_dialog, info_dialog
 
-        #print(f"prefs: {prefs['hello_world_msg']}")
-        #prefs['testit'] = "this is a test"
         # Get currently selected books
         rows = self.gui.library_view.selectionModel().selectedRows()
         if not rows or len(rows) == 0:
@@ -244,11 +245,14 @@ class ImportDialog(QDialog):
             i += 1
             if (self.stop_op): # Did we press 'cancel' from the progress bar?
                 break
-            # Get the path for the .m3u file TODO: Change this to use 'format' as a memory image instead
-            path = db.format_abspath(book_id, "M3U")
-            #print(f"Path: {path}")
+
+            # Get the paths for the audio files from the M3U file
+            audio_file_paths = self.get_audio_paths(book_id)
+            if (not len(audio_file_paths)):
+                continue
             # Now get tags from the audio files
-            audio_tags = get_tags(path)
+            audio_tags = get_tags(audio_file_paths)
+
             # Get the current metadata for this book from the db
             mi = db.get_metadata(book_id, get_cover=True, cover_as_data=True)
             fmts = db.formats(book_id)
@@ -320,7 +324,7 @@ class ImportDialog(QDialog):
 
             if (self.is_checked("cover")):
                 if (update_all or mi.is_null("cover_data")):
-                    cover = get_cover(path)
+                    cover = get_cover(audio_file_paths[0])
                     mi.set("cover_data", cover) # This is a ('type', 'data') tuple
 
             # Update the metadata

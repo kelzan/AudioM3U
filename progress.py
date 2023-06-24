@@ -1,9 +1,6 @@
 __license__   = 'GPL v3'
 __copyright__ = '2023, Kelly Larson'
 
-import sys
-import os
-
 from qt.core import QWidget, QProgressBar, QPushButton, QApplication, QVBoxLayout
 
 class ProgressBarWindow(QWidget):

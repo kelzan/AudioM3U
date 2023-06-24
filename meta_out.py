@@ -1,15 +1,10 @@
 __license__   = 'GPL v3'
 __copyright__ = '2023, Kelly Larson'
 
-import sys
-import os
-
 # Import m3u handling utilities
 from calibre_plugins.AudioM3U.m3u_utils import export_tags
 
 from calibre_plugins.AudioM3U.progress import ProgressBarWindow
-
-from polyglot.builtins import cmp, iteritems, itervalues, string_or_bytes
 
 from qt.core import (QDialog, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QDialogButtonBox,
                      QGridLayout, QPushButton)
@@ -152,7 +147,7 @@ class ExportDialog(QDialog):
         prefs['import_selected'] = checked_items
 
     def accept(self):
-        print("ACCEPT!")
+        #print("ACCEPT!")
         self.export_metadata()
         #self.setWindowTitle('Whassup!')
         super().accept()
@@ -183,6 +178,14 @@ class ExportDialog(QDialog):
         else:
             raise TypeError("Input genre must be a string or a list of strings.")
         
+    def get_audio_paths(self, book_id):
+        db = self.db.new_api
+        book_data = db.format(book_id, "M3U")
+        m3u_text = book_data.decode("utf-8")
+        lines = m3u_text.splitlines()
+        lines = [line for line in lines if ((line != "") and (line[0] != '#'))]
+        return lines
+
     def export_metadata(self):
         '''
         Set the metadata in the files in the selected book's record to
@@ -214,9 +217,10 @@ class ExportDialog(QDialog):
             if (self.stop_op): # Did we press 'cancel' from the progress bar?
                 break
             
-            # Get the path for the .m3u file TODO: Change this to use 'format' as a memory image instead
-            path = db.format_abspath(book_id, "M3U")
-            print(f"Path: {path}")
+            # Get the paths for the audio files from the M3U file
+            audio_file_paths = self.get_audio_paths(book_id)
+            if (not len(audio_file_paths)):
+                continue            
             # Get the current metadata for this book from the db
             mi = db.get_metadata(book_id, get_cover=True, cover_as_data=True)
             # Now determine which fields, based on config and options, need to be updated
@@ -255,10 +259,7 @@ class ExportDialog(QDialog):
                 if ((field == "cover") and (not mi.is_null("cover_data"))):
                     export_meta["cover"] = mi.get("cover_data")
             #print(f"export_meta: {export_meta}")
-            export_tags(path, export_meta)
-
-            #self.db.set_metadata(book_id, mi)
-            #self.gui.library_view.model().refresh_ids([book_id])
+            export_tags(audio_file_paths, export_meta)
             
         # Hide the progress bar
         self.progress_window.hide()
