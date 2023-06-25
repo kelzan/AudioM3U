@@ -18,7 +18,7 @@ from calibre.ebooks.metadata.book.base import Metadata
 from calibre.gui2 import error_dialog, open_url
 from qt.core import QToolButton, QFileDialog, QUrl
 
-HELP_URL = 'https://github.com/kelzan/AudioM3U'
+HELP_URL = 'https://github.com/kelzan/AudioM3U/wiki/Audio-M3U-Documentation'
 
 class InterfacePlugin(InterfaceAction):
 

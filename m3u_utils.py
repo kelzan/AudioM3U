@@ -151,7 +151,7 @@ def get_tags(audio_files):
     tagvals["duration"] += int(duration+.5) # Round floating point tally to integer seconds
 
     # Print Tag information for debug
-    print_metadata()
+    #print_metadata()
 
     return tagvals
 

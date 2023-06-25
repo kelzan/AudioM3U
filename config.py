@@ -309,9 +309,12 @@ class ConfigWidget(QWidget):
 
         self.genreGroupBox.setToolTip(_translate("Dialog", "Stores the genre of the audiobook in a text field.\n"
                                                  "This can be a regular text field, or a 'comma separated text field' if you want to be\n"
-                                                 "able to store more than one genre for a book. If you select 'Trim on Export', only the\n"
+                                                 "able to store more than one genre for a book. If you select 'Trim to Subgroup Export', only the\n"
                                                  "text to the right of the final '.' will be exported when heirarchical genres are used,\n"
-                                                 "ex: Nonfiction.Science.Biology -> Biology"))
+                                                 "ex: Nonfiction.Science.Biology -> Biology\n"
+                                                 "If you select 'Expand Subgroup on Import', then existing genres will be searched when\n"
+                                                 "importing in an attempt to upconvert to the full hierarchy, \n"
+                                                 "ex: Biology -> Nonfiction.Science.Biology"))
         self.genreGroupBox.setTitle(_translate("Dialog", "Genre"))
         self.genreLabel.setText(_translate("Dialog", "Custom Column:"))
         self.genreLineEdit.setPlaceholderText(_translate("Dialog", "ex. \'#genre\' Must be text type"))

@@ -1,10 +1,5 @@
-#!/usr/bin/env python
-# vim:fileencoding=UTF-8:ts=4:sw=4:sta:et:sts=4:ai
-
-
 __license__   = 'GPL v3'
-__copyright__ = '2023, Kelly Larson <kelly@kellylarson.com>'
-__docformat__ = 'restructuredtext en'
+__copyright__ = '2023, Kelly Larson'
 
 # The class that all Interface Action plugin wrappers must inherit from
 from calibre.customize import InterfaceActionBase
